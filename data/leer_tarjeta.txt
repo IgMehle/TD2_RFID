@@ -1,0 +1,18 @@
+bool leer_tarjeta(uint8_t * uid,char *hex_uid) {
+uint8_t i;
+uid_t aux;
+if (MFRC522_IsNewCardPresent()) {
+PRINTF("Tarj. Detectada\n");
+if (!MFRC522_ReadCardSerial( & aux))
+return 0;
+for (i = 0; i < aux.size; i++) {
+uid[i] = aux.uidByte[i];
+// Convierte el valor actual a hexadecimal y guárdalo en hex_uid sprintf(hex_uid + i * 2, "%02x", aux.uidByte[i]);
+}
+MFRC522_HaltA();
+MFRC522_StopCrypto(); PRINTF("\n\n"); //cambio de linea
+delay_ms(1000);
+return 0;
+}
+return 1;
+}
