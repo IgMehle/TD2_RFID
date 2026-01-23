@@ -16,33 +16,30 @@
 #include "clock_config.h"
 #include "fsl_debug_console.h"
 /* TODO: insert other include files here. */
-#include "defs.h"
+#include <my_defs.h>
+#include "mfrc522_td2.h"
+#include "lcd_4bit.h"
+#include "lcd_4bit_port.h"
+#include "ds3231.h"
 /* TODO: insert other definitions and declarations here. */
 
 /*
  * @brief   Application entry point.
  */
-int main(void) {
+int main(void)
+{
+	BOARD_BootClockFRO24M();
+	BOARD_InitDebugConsole();
+	(void) SysTick_Config(SystemCoreClock/1000);
 
-    /* Init board hardware. */
-    BOARD_InitBootPins();
-    BOARD_InitBootClocks();
-    BOARD_InitBootPeripherals();
-#ifndef BOARD_INIT_DEBUG_CONSOLE_PERIPHERAL
-    /* Init FSL debug console. */
-    BOARD_InitDebugConsole();
-#endif
+	// PORT INIT
+	gpio_init();
+	i2c_init();
+	spi_init();
 
-    PRINTF("Hello World\r\n");
+	// LOOP DE EJECUCION
+    while(1){
 
-    /* Force the counter to be placed into memory. */
-    volatile static int i = 0 ;
-    /* Enter an infinite loop, just incrementing a counter. */
-    while(1) {
-        i++ ;
-        /* 'Dummy' NOP to allow source level single stepping of
-            tight while() loop */
-        __asm volatile ("nop");
     }
     return 0 ;
 }

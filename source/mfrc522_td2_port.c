@@ -4,6 +4,9 @@
  *  Created on: 21 ene. 2026
  *      Author: Ignacio
  */
+// MY DEFS
+#include <my_defs.h>
+//--------------------------------------------------------------//
 #include "mfrc522_td2.h"
 // LPC845
 #include "fsl_clock.h"
@@ -14,8 +17,6 @@
 #include "board.h"
 #include "pin_mux.h"
 #include "fsl_common.h"
-// DEFS
-#include "defs.h"
 
 //---------------------------------------------------------------//
 // CONTROL PINS
@@ -26,32 +27,11 @@
 #define MFRC522_RST(x)  GPIO_PinWrite(GPIO, 0, RST_PIN, x)
 #define MFRC522_CS(x)   GPIO_PinWrite(GPIO, 0, CS_PIN, x)
 
-volatile uint8_t registros[64] = {0};
-#define PEEK(reg) registros[reg] = readMFRC522(reg);
-
 // SPI GLOBAL VARIABLES
 uint32_t srcFreq;
 spi_master_config_t userConfig;
 
-void spi_init()
-{
-	// Config SPI PINS
-    CLOCK_EnableClock(kCLOCK_Swm);
-    SWM_SetMovablePinSelect(SWM0, kSWM_SPI0_MISO, RFID_MISO_PIN);
-    SWM_SetMovablePinSelect(SWM0, kSWM_SPI0_MOSI, RFID_MOSI_PIN);
-    SWM_SetMovablePinSelect(SWM0, kSWM_SPI0_SCK, RFID_SCK_PIN);
-    // SWM_SetMovablePinSelect(SWM0, kSWM_SPI0_SSEL0, RFID_SS_PIN);
-    CLOCK_DisableClock(kCLOCK_Swm);
-    CLOCK_Select(kSPI0_Clk_From_MainClk);
-
-    // Config GPIO PINS
-    GPIO_PortInit(GPIO, 0);
-    gpio_pin_config_t out_config = {kGPIO_DigitalOutput, 1};
-    GPIO_PinInit(GPIO, 0, CS_PIN, &out_config);
-    GPIO_PinInit(GPIO, 0, RST_PIN, &out_config);
-}
-
-void spi_config(void)
+void mfrc522_spi_config(void)
 {
     SPI_MasterGetDefaultConfig(&userConfig);
     userConfig.baudRate_Bps = 1000000;

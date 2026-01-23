@@ -7,7 +7,10 @@
 
 #include "mfrc522_td2.h"
 
-void rfid_init(void)
+volatile uint8_t mfrc522_registros[64] = {0};
+#define PEEK(reg) mfrc522_registros[reg] = readMFRC522(reg);
+
+void mfrc522_init(void)
 {
     /*Incializacion del rfid*/
     MFRC522_RST(1); // Chip_GPIO_SetPinState(LPC_GPIO, RST_PORT, RST_PIN, 1);

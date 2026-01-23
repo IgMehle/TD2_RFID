@@ -13,9 +13,12 @@
 #include <stdbool.h>
 
 // VARIABLES Y FUNCIONES EXTERNAS
-#define BUFFER_SIZE (64)
 extern void delay_ms(uint32_t ms); // Delay function prototype
 extern unsigned char serNum[5];
+
+#define BUFFER_SIZE (64)
+#define BUFFER_SIZE_R      2
+#define MAX_LEN 16   // Largo maximo de la matriz
 
 //command set
 #define Idle_CMD 				0x00
@@ -34,7 +37,7 @@ extern unsigned char serNum[5];
 // MFRC522 REGISTERS
 //---------------------------------------------------------------//
 
-// MFRC522 comando palabra
+// MFRC522 commands
 #define PCD_IDLE              0x00               // NO action; Y cancelar el comando
 #define PCD_AUTHENT           0x0E               // autenticacion de clave
 #define PCD_RECEIVE           0x08               // recepcion de datos
@@ -43,11 +46,11 @@ extern unsigned char serNum[5];
 #define PCD_RESETPHASE        0x0F               // reajustar
 #define PCD_CALCCRC           0x03               // CRC calcular
 
-// Mifare_One  Tarjeta Mifare_One comando palabra
+// Mifare_One  Tarjeta Mifare_One commands
 #define PICC_REQIDL           0x26               // �rea de la antena no esta tratando de entrar en el estado de reposo
 #define PICC_REQALL           0x52               // Todas las cartas para encontrar el �rea de la antena
-#define PICC_ANTICOLL         0x93               // anti-colisi�n
-#define PICC_SElECTTAG        0x93               // eleccion de tarjeta
+#define PICC_ANTICOLL         0x93               // anti-colisiOn
+#define PICC_SElECTTAG        0x93               // Seleccion de tarjeta
 #define PICC_AUTHENT1A        0x60               // verificacion key A
 #define PICC_AUTHENT1B        0x61               // verificacion Key B
 #define PICC_READ             0x30               // leer bloque
@@ -55,7 +58,7 @@ extern unsigned char serNum[5];
 #define PICC_DECREMENT        0xC0               // cargo
 #define PICC_INCREMENT        0xC1               // recargar
 #define PICC_RESTORE          0xC2               // Transferencia de datos de bloque de buffer
-#define PICC_TRANSFER         0xB0               // Guardar los datos en el b�fer
+#define PICC_TRANSFER         0xB0               // Guardar los datos en el buffer
 #define PICC_HALT             0x50               // inactividad
 
 // MFrc522 Codigo de error de comunicacion cuando regresa
@@ -133,9 +136,6 @@ extern unsigned char serNum[5];
 #define     Reserved33            0x3E
 #define     Reserved34			  0x3F
 
-#define BUFFER_SIZE_R      2
-#define MAX_LEN 16   // Largo maximo de la matriz
-
 typedef unsigned char statusCode_t; // Status return type for functions
 
 typedef struct {
@@ -147,9 +147,8 @@ uint8_t sak;            // The SAK (Select acknowledge) byte returned from the P
 //---------------------------------------------------------------//
 // PROTOTYPES
 //---------------------------------------------------------------//
-void spi_init(void);
-void spi_config(void);
-void rfid_init (void);
+void mfrc522_spi_config(void);
+void mfrc522_init(void);
 void reset(void);
 void antennaOn(void);
 uint8_t readMFRC522(uint8_t addr);
