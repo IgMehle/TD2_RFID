@@ -10,12 +10,6 @@
 
 // MY DEFS
 #include <my_defs.h>
-#include "LPC845.h"
-#include "peripherals.h"
-#include "pin_mux.h"
-#include "clock_config.h"
-#include "board.h"
-#include "fsl_gpio.h"
 /*-------------------------------------------------------------------*/
 // PINOUT GPIO
 #define LCD_DB4(x)			GPIO_PinWrite(GPIO, 0, LCD_DB4, x)

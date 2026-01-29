@@ -71,6 +71,8 @@
 #define KBD_C3_PIN		9
 #define KBD_C4_PIN		8
 
+#define RET_OK			0
+#define RET_ERR			1
 /******************************************
  * 	MACROS
  ****************************************** */
