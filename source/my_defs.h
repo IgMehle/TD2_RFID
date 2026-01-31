@@ -25,6 +25,7 @@
 // UTILITIES
 #include "fsl_debug_console.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 /******************************
@@ -71,8 +72,8 @@
 #define KBD_C3_PIN		9
 #define KBD_C4_PIN		8
 
-#define RET_OK			0
-#define RET_ERR			1
+#define STATUS_OK		0
+#define STATUS_ERR		1
 /******************************************
  * 	MACROS
  ****************************************** */
