@@ -9,17 +9,17 @@
 #define LCD_4BIT_PORT_H_
 
 // MY DEFS
-#include <my_defs.h>
+#include "my_defs.h"
 /*-------------------------------------------------------------------*/
 // PINOUT GPIO
-#define LCD_DB4(x)			GPIO_PinWrite(GPIO, 0, LCD_DB4, x)
-#define LCD_DB5(x)			GPIO_PinWrite(GPIO, 0, LCD_DB5, x)
-#define LCD_DB6(x)			GPIO_PinWrite(GPIO, 0, LCD_DB6, x)
-#define LCD_DB7(x)			GPIO_PinWrite(GPIO, 0, LCD_DB7, x)
-#define LCD_RS(x)			GPIO_PinWrite(GPIO, 0, LCD_RS, x)
+#define LCD_DB4(x)			GPIO_PinWrite(GPIO, 0, LCD_DB4_PIN, x)
+#define LCD_DB5(x)			GPIO_PinWrite(GPIO, 0, LCD_DB5_PIN, x)
+#define LCD_DB6(x)			GPIO_PinWrite(GPIO, 0, LCD_DB6_PIN, x)
+#define LCD_DB7(x)			GPIO_PinWrite(GPIO, 0, LCD_DB7_PIN, x)
+#define LCD_RS(x)			GPIO_PinWrite(GPIO, 0, LCD_RS_PIN, x)
 //#define LCD_RW(x)			GPIO_PinWrite(GPIO, 0, RW, x)
-#define LCD_E(x)			GPIO_PinWrite(GPIO, 0, LCD_E, x)
-#define LCD_BL(x)			GPIO_PinWrite(GPIO, 0, LCD_BL, x)
+#define LCD_E(x)			GPIO_PinWrite(GPIO, 0, LCD_E_PIN, x)
+#define LCD_BL(x)			GPIO_PinWrite(GPIO, 0, LCD_BL_PIN, x)
 /*-------------------------------------------------------------------*/
 // DELAY LCD
 /* Los delays bloqueantes deben ser ajustados segun

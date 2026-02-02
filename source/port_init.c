@@ -27,7 +27,7 @@ void gpio_init(void)
 	GPIO_PinInit(GPIO, 0, RFID_SS_PIN, &out_config);
 	GPIO_PinInit(GPIO, 0, RFID_RST_PIN, &out_config);
 
-	// TECLADO
+	// KEYBOARD PINS
 	GPIO_PinInit(GPIO, 0, KBD_R1_PIN, &out_config);
 	GPIO_PinInit(GPIO, 0, KBD_R2_PIN, &out_config);
 	GPIO_PinInit(GPIO, 0, KBD_R3_PIN, &out_config);
@@ -37,7 +37,7 @@ void gpio_init(void)
 	GPIO_PinInit(GPIO, 0, KBD_C3_PIN, &in_config);
 	GPIO_PinInit(GPIO, 0, KBD_C4_PIN, &in_config);
 
-	// IO
+	// IO VARIOS
 	GPIO_PinInit(GPIO, 0, BUZZER_PIN, &out_config);
 	GPIO_PinInit(GPIO, 0, PULS_PIN, &in_config);
 	GPIO_PinInit(GPIO, 0, HALLSENS_PIN, &in_config);

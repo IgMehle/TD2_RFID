@@ -5,7 +5,7 @@
  *      Author: Ignacio
  */
 // MY DEFS
-#include <my_defs.h>
+#include "my_defs.h"
 //--------------------------------------------------------------//
 #include "mfrc522_td2.h"
 // LPC845

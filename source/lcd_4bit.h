@@ -8,12 +8,14 @@
 #ifndef LCD_4BIT_H_
 #define LCD_4BIT_H_
 
+#include <stdint.h>
+
 //#define LCD_BUSY	1
 //#define LCD_NBUSY	0
 
-union {
+typedef union {
 	uint8_t data;
-	struct{
+	struct {
 		uint8_t b0:1;
 		uint8_t b1:1;
 		uint8_t b2:1;
@@ -23,7 +25,7 @@ union {
 		uint8_t b6:1;
 		uint8_t b7:1;
 	} d;
-} lcd;
+} lcd_t;
 /*-------------------------------------------------------------------*/
 void lcd_pins_init(void);
 /*-------------------------------------------------------------------*/

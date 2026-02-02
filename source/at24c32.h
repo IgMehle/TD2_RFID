@@ -8,6 +8,8 @@
 #ifndef AT24C32_H_
 #define AT24C32_H_
 
+#include <stdint.h>
+
 #define EEPROM_ADDR 		0x50
 #define EEPROM_PAGE_SIZE 	0x20
 #define EEPROM_OK			0

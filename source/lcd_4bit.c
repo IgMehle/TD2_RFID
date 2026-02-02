@@ -8,6 +8,8 @@
 #include "lcd_4bit.h"
 #include "lcd_4bit_port.h"
 
+volatile lcd_t lcd;
+
 static inline void lcd_delay(uint32_t dl)
 {
 	uint32_t d;
