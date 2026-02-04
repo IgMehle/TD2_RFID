@@ -28,14 +28,14 @@ void gpio_init(void)
 	GPIO_PinInit(GPIO, 0, RFID_RST_PIN, &out_config);
 
 	// KEYBOARD PINS
+	GPIO_PinInit(GPIO, 0, KBD_R0_PIN, &out_config);
 	GPIO_PinInit(GPIO, 0, KBD_R1_PIN, &out_config);
 	GPIO_PinInit(GPIO, 0, KBD_R2_PIN, &out_config);
 	GPIO_PinInit(GPIO, 0, KBD_R3_PIN, &out_config);
-	GPIO_PinInit(GPIO, 0, KBD_R4_PIN, &out_config);
+	GPIO_PinInit(GPIO, 0, KBD_C0_PIN, &in_config);
 	GPIO_PinInit(GPIO, 0, KBD_C1_PIN, &in_config);
 	GPIO_PinInit(GPIO, 0, KBD_C2_PIN, &in_config);
 	GPIO_PinInit(GPIO, 0, KBD_C3_PIN, &in_config);
-	GPIO_PinInit(GPIO, 0, KBD_C4_PIN, &in_config);
 
 	// IO VARIOS
 	GPIO_PinInit(GPIO, 0, BUZZER_PIN, &out_config);

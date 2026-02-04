@@ -25,7 +25,9 @@
 // UTILITIES
 #include "fsl_debug_console.h"
 #include <stdio.h>
+#include <stdint.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 
 /******************************
@@ -63,14 +65,14 @@
 #define	LCD_DB7_PIN		13
 #define LCD_BL_PIN		30
 
-#define KBD_R1_PIN		22
-#define KBD_R2_PIN		23
-#define KBD_R3_PIN		26
-#define	KBD_R4_PIN		27
-#define KBD_C1_PIN		28
-#define KBD_C2_PIN		29
-#define KBD_C3_PIN		9
-#define KBD_C4_PIN		8
+#define KBD_R0_PIN		22
+#define KBD_R1_PIN		23
+#define KBD_R2_PIN		26
+#define	KBD_R3_PIN		27
+#define KBD_C0_PIN		28
+#define KBD_C1_PIN		29
+#define KBD_C2_PIN		9
+#define KBD_C3_PIN		8
 
 #define STATUS_OK		0
 #define STATUS_ERR		1
@@ -79,6 +81,7 @@
  ****************************************** */
 #define SYSTICK_IRQEN	NVIC_EnableIRQ(SysTick_IRQn)
 #define SYSTICK_IRQDIS	NVIC_DisableIRQ(SysTick_IRQn)
+#define NOP() __asm volatile ("nop")
 
 //-----------------------------------------------------------//
 // PROTOTYPES
