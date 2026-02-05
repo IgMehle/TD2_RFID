@@ -25,6 +25,26 @@ static inline uint8_t keypad_col_read(uint8_t col)
 	return (uint8_t) (GPIO_PinRead(GPIO, 0, columns[col]));
 }
 
+static inline void keypad_show_pin(char *pin, uint8_t hide)
+{
+	char ast[PIN_LEN + 1];
+	uint8_t n = 0;
+
+	while (pin[n] != '\0' && n < PIN_LEN) n++;
+
+	if (hide == PIN_SHOW) {
+		// mostrar pin
+		lcd4_print(pin, PIN_LINE);
+		// printf("\r%s", pin);
+	}
+	else {
+		for (uint8_t i = 0; i < n; i++) ast[i] = '*';
+		ast[n] = '\0';
+		lcd4_print(ast, PIN_LINE);
+		// printf("\r%s", ast);
+	}
+}
+
 static inline void keypad_row_delay(void)
 {
 	for (uint8_t i = 0; i < ROW_DELAY; i++);

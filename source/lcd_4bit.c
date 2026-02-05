@@ -79,7 +79,7 @@ void lcd4_write_data(unsigned char wd)
 	lcd_delay(DELAY_SHORT);
 }
 /*-------------------------------------------------------------------*/
-void lcd4_line(unsigned char *p,unsigned char r)
+void lcd4_print(unsigned char *p,unsigned char r)
 {
 	switch(r)
 	{

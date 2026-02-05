@@ -99,7 +99,57 @@ char keypad_readkey(void)
 	return k;
 }
 
-void keypad_readpin(char num1)
+uint8_t keypad_readpin(char first_dig, char *pin)
 {
+	uint8_t i = 0;
+	char k;
 
+	// Validacion
+	if (first_dig < '0' || first_dig > '9') return PIN_CANCEL;
+	// Guardo el primer digito
+	pin[0] = first_dig;
+	pin[1] = '\0';
+	// Muestro pin
+	keypad_show_pin(pin, PIN_SHOW);
+	// Incremento indice
+	i++;
+
+	while(1) {
+		// Leo tecla
+		k = keypad_readkey();
+		if (k == 0) continue;
+
+		// Cancelacion
+		if (k == 'C') {
+			pin[0] = '\0';
+			return PIN_CANCEL;
+		}
+
+		// Borrado
+		if (k == 'B') {
+			// Si no tengo 0 digitos en el string
+			if (i > 0) {
+				i--;
+				pin[i] = '\0';
+				// Muestro pin
+				keypad_show_pin(pin, PIN_SHOW);
+			}
+		}
+
+		// Si la tecla es numerica la agrego al pin
+		if (k >= '0' && k <= '9') {
+			if (i < PIN_LEN) {
+				pin[i] = k;
+				// Incremento indice
+				i++;
+				pin[i] = '\0';
+				// Muestro pin
+				keypad_show_pin(pin, PIN_SHOW);
+				// Si llego a 4, tengo el pin completo
+				if (i == PIN_LEN) return PIN_OK;
+			}
+		}
+	}
 }
+
+

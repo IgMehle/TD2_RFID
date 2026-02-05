@@ -34,7 +34,7 @@ static inline void lcd_delay(uint32_t dl);
 void lcd_4bit_init(void);
 void lcd4_write_com(unsigned char w4b);
 void lcd4_write_data(unsigned char wd);
-void lcd4_line(unsigned char *p,unsigned char r);
+void lcd4_print(unsigned char *p,unsigned char r);
 void lcd_mode4bit(void);	// mode 4bit
 void ClearDisplay4(void);
 void ReturnHome4(void);
