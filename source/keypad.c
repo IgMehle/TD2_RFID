@@ -8,14 +8,16 @@
 #include "keypad.h"
 
 // Variables para manejo del teclado
-const char keys[KEYPAD_ROWS][KEYPAD_COLS] = {
-  { '1','2','3','A' },
-  { '4','5','6','B' },
-  { '7','8','9','C' },
-  { '*','0','#','D' }
-};
+//const char keys[KEYPAD_ROWS][KEYPAD_COLS] = {
+//  { '1','2','3','A' },
+//  { '4','5','6','B' },
+//  { '7','8','9','C' },
+//  { '*','0','#','D' }
+//};
+const char keys[] = { '1','2','3','A','4','5','6','B','7','8','9','C','*','0','#','D' };
 volatile key_t key = {KEY_NONE, KEY_NONE, 0};
 volatile key_event_t key_event = {KEY_EVENT_NONE, KEY_NONE};
+static volatile char key_ready = 0;
 
 uint8_t keypad_scan(void)
 {
@@ -28,7 +30,7 @@ uint8_t keypad_scan(void)
 		// Leo columnas
 		for (uint8_t c = 0; c < KEYPAD_COLS; c++) {
 			// Si detecto columna activa
-			if (keypad_col_read(c) = COL_ACTIVE) {
+			if (keypad_col_read(c) == COL_ACTIVE) {
 				// Desactivo la fila r antes de salir
 				keypad_row_write(r, 1);
 				// Devuelvo numero de tecla
@@ -82,8 +84,15 @@ void keypad_update(void)
 				key_event.key = last_valid;
 			}
 			else {
-				key_event.type = KEY_EVENT_DOWN;
-				key_event.key = scan;
+				// last_valid != NONE y scan != NONE
+				// No acepto nueva hasta ver NONE estable
+				key_event.type = KEY_EVENT_NONE;
+				key_event.key = last_valid;
+				key.valid_key = KEY_NONE;
+			}
+			// Publico la tecla para que readkey() la consuma una vez
+			if (key_event.type == KEY_EVENT_DOWN) {
+			    key_ready = keys[key_event.key];
 			}
 		}
 	}
@@ -91,5 +100,12 @@ void keypad_update(void)
 
 char keypad_readkey(void)
 {
-
+	char k = key_ready;
+	if (k != 0) {
+		key_ready = 0;
+		// Limpio el evento
+		key_event.type = KEY_EVENT_NONE;
+		key_event.key = KEY_NONE;
+	}
+	return k;
 }

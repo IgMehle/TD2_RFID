@@ -34,6 +34,12 @@ typedef struct {
 	uint8_t key;
 } key_event_t;
 
+typedef enum {
+	WAITING = 0,
+	TECLA_VALIDA,
+	TECLA_LEIDA
+} readkey_state_t;
+
 // IO
 static inline void keypad_row_write(uint8_t row, uint8_t level);
 static inline uint8_t keypad_col_read(uint8_t col);

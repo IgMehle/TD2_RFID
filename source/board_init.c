@@ -6,13 +6,14 @@
  */
 
 #include "my_defs.h"
+// #include "pinout.h"
 
 void gpio_init(void)
 {
 	GPIO_PortInit(GPIO, 0);
 	GPIO_PortInit(GPIO, 1);
 	gpio_pin_config_t out_config = {kGPIO_DigitalOutput, 1};
-	gpio_pin_config_t in_config = {kGPIO_DigitalInput, 1};
+	gpio_pin_config_t in_config = {kGPIO_DigitalInput, 0};
 
 	// LCD PINS
 	GPIO_PinInit(GPIO, 0, LCD_RS_PIN, &out_config);
@@ -50,13 +51,13 @@ void gpio_init(void)
 
 void i2c_init(void)
 {
-	const uint32_t baudRate = 100000;
-	const uint32_t frequency = SystemCoreClock;
+	// const uint32_t baudRate = 100000;
+	// const uint32_t frequency = SystemCoreClock;
 	///////// I2C0 //////////////////////////////////
 	CLOCK_Select(kI2C0_Clk_From_MainClk);
 	CLOCK_EnableClock(kCLOCK_Swm);
-	SWM_SetFixedPinSelect(SWM0, kSWM_I2C0_SCL, kSWM_PortPin_P0_10);
-	SWM_SetFixedPinSelect(SWM0, kSWM_I2C0_SDA, kSWM_PortPin_P0_11);
+	SWM_SetFixedPinSelect(SWM0, kSWM_I2C0_SCL, true);
+	SWM_SetFixedPinSelect(SWM0, kSWM_I2C0_SDA, true);
 	CLOCK_DisableClock(kCLOCK_Swm);
 	i2c_master_config_t masterConfig;
 	/*
