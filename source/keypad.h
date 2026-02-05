@@ -16,29 +16,16 @@
 #define DEBOUNCE_N  4   // 4 muestras * 5ms = 20ms
 #define COL_ACTIVE	1
 
-
-typedef enum {
-    KEY_EVENT_NONE = 0,
-    KEY_EVENT_DOWN,
-    KEY_EVENT_UP
-} key_event_type_t;
-
-typedef struct {
+typedef struct key {
 	uint8_t last_key;
-	uint8_t valid_key;
 	uint8_t counter;
+	uint8_t valid_key;
 } key_t;
 
-typedef struct {
-	key_event_type_t type;
-	uint8_t key;
-} key_event_t;
-
-typedef enum {
-	WAITING = 0,
-	TECLA_VALIDA,
-	TECLA_LEIDA
-} readkey_state_t;
+typedef enum kp_state {
+	KP_IDLE = 0,
+	KP_PRESSED
+} kp_state_t;
 
 // IO
 static inline void keypad_row_write(uint8_t row, uint8_t level);
@@ -49,6 +36,6 @@ static inline void keypad_row_delay(void);
 uint8_t keypad_scan(void);
 void keypad_update(void);
 char keypad_readkey(void);
-void keypad_readpin(void);
+void keypad_readpin(char num1);
 
 #endif /* KEYPAD_H_ */

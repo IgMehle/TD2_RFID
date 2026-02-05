@@ -7,17 +7,11 @@
 
 #include "keypad.h"
 
-// Variables para manejo del teclado
-//const char keys[KEYPAD_ROWS][KEYPAD_COLS] = {
-//  { '1','2','3','A' },
-//  { '4','5','6','B' },
-//  { '7','8','9','C' },
-//  { '*','0','#','D' }
-//};
-const char keys[] = { '1','2','3','A','4','5','6','B','7','8','9','C','*','0','#','D' };
-volatile key_t key = {KEY_NONE, KEY_NONE, 0};
-volatile key_event_t key_event = {KEY_EVENT_NONE, KEY_NONE};
-static volatile char key_ready = 0;
+// Variables globales para manejo del teclado
+static const char keys[] = { '1','2','3','A','4','5','6','B','7','8','9','C','*','0','#','D' };
+static volatile key_t key = {KEY_NONE, 0, KEY_NONE};
+static volatile kp_state_t kp_state = KP_IDLE;
+static volatile char key_bf = 0;
 
 uint8_t keypad_scan(void)
 {
@@ -66,46 +60,46 @@ void keypad_update(void)
 		// Si la tecla no es igual a la ultima tecla valida
 		// Significa que detecto un cambio
 		if (scan != key.valid_key) {
-			// Guardo la ultima tecla valida
-			uint8_t last_valid = key.valid_key;
-			// Actualizo la tecal leida como valida
+			// Actualizo la tecla leida como valida
 			key.valid_key = scan;
-
-			// Si detecto una tecla valida
-			// es un evento de KEY DOWN
-			if (last_valid == KEY_NONE && scan != KEY_NONE) {
-				key_event.type = KEY_EVENT_DOWN;
-				key_event.key = scan;
-			}
-			// Si no, es un evento de KEY UP
-			// Guardo la tecla que se levanto
-			else if (last_valid != KEY_NONE && scan == KEY_NONE) {
-				key_event.type = KEY_EVENT_UP;
-				key_event.key = last_valid;
-			}
-			else {
-				// last_valid != NONE y scan != NONE
-				// No acepto nueva hasta ver NONE estable
-				key_event.type = KEY_EVENT_NONE;
-				key_event.key = last_valid;
-				key.valid_key = KEY_NONE;
-			}
-			// Publico la tecla para que readkey() la consuma una vez
-			if (key_event.type == KEY_EVENT_DOWN) {
-			    key_ready = keys[key_event.key];
-			}
 		}
+	}
+
+	// ESTADO DEL KEYPAD
+	switch (kp_state) {
+	case KP_IDLE:
+		if (key.valid_key != KEY_NONE) {
+			// Tecla pulsada
+			// Guardo en buffer si esta vacio
+			if (key_bf == 0) key_bf = keys[key.valid_key];
+			// Cambio a estado pressed
+			kp_state = KP_PRESSED;
+		}
+		break;
+	case KP_PRESSED:
+		if (key.valid_key == KEY_NONE) {
+			// Solte la tecla, vuelvo a idle
+			kp_state = KP_IDLE;
+		}
+		break;
+	default:
+		kp_state = KP_IDLE;
+		break;
 	}
 }
 
 char keypad_readkey(void)
 {
-	char k = key_ready;
-	if (k != 0) {
-		key_ready = 0;
-		// Limpio el evento
-		key_event.type = KEY_EVENT_NONE;
-		key_event.key = KEY_NONE;
-	}
+	char k;
+	__disable_irq();
+	// Tomo la tecla del buffer
+	k = key_bf;
+	key_bf = 0;
+	__enable_irq();
 	return k;
+}
+
+void keypad_readpin(char num1)
+{
+
 }
