@@ -15,17 +15,17 @@
 const uint8_t rows[KEYPAD_ROWS] = { KBD_R0_PIN, KBD_R1_PIN, KBD_R2_PIN, KBD_R3_PIN };
 const uint8_t columns[KEYPAD_COLS] = { KBD_C0_PIN, KBD_C1_PIN, KBD_C2_PIN, KBD_C3_PIN };
 
-static inline void keypad_row_write(uint8_t row, uint8_t level)
+void keypad_row_write(uint8_t row, uint8_t level)
 {
 	GPIO_PinWrite(GPIO, 0, rows[row], level);
 }
 
-static inline uint8_t keypad_col_read(uint8_t col)
+uint8_t keypad_col_read(uint8_t col)
 {
 	return (uint8_t) (GPIO_PinRead(GPIO, 0, columns[col]));
 }
 
-static inline void keypad_show_pin(char *pin, uint8_t hide)
+void keypad_show_pin(char *pin, uint8_t hide)
 {
 	char ast[PIN_LEN + 1];
 	uint8_t n = 0;
@@ -45,7 +45,7 @@ static inline void keypad_show_pin(char *pin, uint8_t hide)
 	}
 }
 
-static inline void keypad_row_delay(void)
+void keypad_row_delay(void)
 {
 	for (uint8_t i = 0; i < ROW_DELAY; i++);
 }

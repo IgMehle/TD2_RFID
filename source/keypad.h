@@ -35,15 +35,15 @@ typedef enum kp_state {
 } kp_state_t;
 
 // IO
-static inline void keypad_row_write(uint8_t row, uint8_t level);
-static inline uint8_t keypad_col_read(uint8_t col);
-static inline void keypad_show_pin(char *pin, uint8_t hide);
-static inline void keypad_row_delay(void);
+void keypad_row_write(uint8_t row, uint8_t level);
+uint8_t keypad_col_read(uint8_t col);
+void keypad_show_pin(char *pin, uint8_t hide);
+void keypad_row_delay(void);
 
 // FUNCTIONS
 uint8_t keypad_scan(void);
 void keypad_update(void);
 char keypad_readkey(void);
-void keypad_readpin(char first_dig, char *pin);
+uint8_t keypad_readpin(char first_dig, char *pin);
 
 #endif /* KEYPAD_H_ */

@@ -91,11 +91,11 @@ void keypad_update(void)
 char keypad_readkey(void)
 {
 	char k;
-	__disable_irq();
+	// __disable_irq();
 	// Tomo la tecla del buffer
 	k = key_bf;
 	key_bf = 0;
-	__enable_irq();
+	// __enable_irq();
 	return k;
 }
 
