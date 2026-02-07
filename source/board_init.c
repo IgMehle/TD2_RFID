@@ -24,7 +24,7 @@ void gpio_init(void)
 	GPIO_PinInit(GPIO, 0, LCD_DB7_PIN, &out_config);
 	GPIO_PinInit(GPIO, 0, LCD_BL_PIN, &out_config);
 
-	// RFID PINS
+	// RFID GPIO PINS
 	GPIO_PinInit(GPIO, 0, RFID_SS_PIN, &out_config);
 	GPIO_PinInit(GPIO, 0, RFID_RST_PIN, &out_config);
 

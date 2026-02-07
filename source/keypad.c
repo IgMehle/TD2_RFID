@@ -12,6 +12,11 @@ static const char keys[] = { '1','2','3','A','4','5','6','B','7','8','9','C','*'
 static volatile key_t key = {KEY_NONE, 0, KEY_NONE};
 static volatile kp_state_t kp_state = KP_IDLE;
 static volatile char key_bf = 0;
+//typedef struct scan_bf {
+//	uint8_t bf[128];
+//	uint8_t count;
+//} scan_bf_t;
+//volatile scan_bf_t scan_bf = { {0}, 0 };
 
 uint8_t keypad_scan(void)
 {
@@ -37,10 +42,15 @@ uint8_t keypad_scan(void)
 	return KEY_NONE;
 }
 
-void keypad_update(void)
+uint8_t keypad_update(void)
 {
 	// Escaneo teclado
 	uint8_t scan = keypad_scan();
+	// APPEND a scan_bf para debug
+//	if (scan_bf.count < 129) {
+//		scan_bf.bf[scan_bf.count] = scan;
+//		scan_bf.count++;
+//	}
 
 	// Actualizo contador de muestras si se repite la tecla
 	if (scan == key.last_key) {
@@ -86,6 +96,7 @@ void keypad_update(void)
 		kp_state = KP_IDLE;
 		break;
 	}
+	return 0;
 }
 
 char keypad_readkey(void)
@@ -95,6 +106,13 @@ char keypad_readkey(void)
 	// Tomo la tecla del buffer
 	k = key_bf;
 	key_bf = 0;
+	// DEBUG de secuencia de lecturas de keypad_scan
+//	uint8_t j = 0;
+//	while (scan_bf.count > 0) {
+//		PRINTF("%2X ", &scan_bf.bf[j]);
+//		j++;
+//		scan_bf.count--;
+//	}
 	// __enable_irq();
 	return k;
 }

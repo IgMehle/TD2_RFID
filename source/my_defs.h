@@ -34,6 +34,7 @@
 
 #define STATUS_OK		0
 #define STATUS_ERR		1
+
 /******************************************
  * 	MACROS
  ****************************************** */
@@ -41,12 +42,26 @@
 #define SYSTICK_IRQDIS	NVIC_DisableIRQ(SysTick_IRQn)
 #define NOP() __asm volatile ("nop")
 
-//-----------------------------------------------------------//
-// PROTOTYPES
-//-----------------------------------------------------------//
+/* ----- GPIO ------------------------------ */
+#define RELAY_ON		GPIO_PinWrite(GPIO, 1, RELAY_PIN, 0)
+#define RELAY_OFF		GPIO_PinWrite(GPIO, 1, RELAY_PIN, 1)
+#define LED_ERR_ON		GPIO_PinWrite(GPIO, 1, LED_ERR_PIN, 0)
+#define LED_ERR_OFF		GPIO_PinWrite(GPIO, 1, LED_ERR_PIN, 1)
+#define LED_RUN_ON		GPIO_PinWrite(GPIO, 1, LED_RUN_PIN, 0)
+#define LED_RUN_OFF		GPIO_PinWrite(GPIO, 1, LED_RUN_PIN, 1)
+#define LCD_BL_ON		GPIO_PinWrite(GPIO, 0, BUZZER_PIN, 0)
+#define LCD_BL_OFF		GPIO_PinWrite(GPIO, 0, BUZZER_PIN, 1)
+#define BUZZER_ON		GPIO_PinWrite(GPIO, 0, BUZZER_PIN, 0)
+#define BUZZER_OFF		GPIO_PinWrite(GPIO, 0, BUZZER_PIN, 1)
+#define PULSADOR		GPIO_PinRead(GPIO, 0, PULS_PIN)
+#define HALLSENS		GPIO_PinRead(GPIO, 0, HALLSENS_PIN)
+
+/******************************************
+ * 	PROTOTYPES
+ ****************************************** */
 void delay_ms(uint32_t ms);
 
-///// PERIPHERALS /////
+///// BOARD INIT /////
 void gpio_init(void);
 void i2c_init(void);
 void spi_init(void);

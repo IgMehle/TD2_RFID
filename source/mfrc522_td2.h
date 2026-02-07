@@ -10,15 +10,12 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <string.h>
 #include <stdbool.h>
 
-// VARIABLES Y FUNCIONES EXTERNAS
-extern void delay_ms(uint32_t ms); // Delay function prototype
-extern unsigned char serNum[5];
-
-#define BUFFER_SIZE (64)
-#define BUFFER_SIZE_R      2
-#define MAX_LEN 16   // Largo maximo de la matriz
+#define BUFFER_SIZE 	(64)
+#define BUFFER_SIZE_R 	2
+#define MAX_LEN 		16   // Largo maximo de la matriz
 
 //command set
 #define Idle_CMD 				0x00
@@ -147,12 +144,9 @@ uint8_t sak;            // The SAK (Select acknowledge) byte returned from the P
 //---------------------------------------------------------------//
 // PROTOTYPES
 //---------------------------------------------------------------//
-void mfrc522_spi_config(void);
 void mfrc522_init(void);
 void reset(void);
 void antennaOn(void);
-uint8_t readMFRC522(uint8_t addr);
-void writeMFRC522(uint8_t addr, uint8_t val);
 bool isCard(void) ;
 void setBitMask(uint8_t reg, uint8_t mask);
 unsigned char MFRC522ToCard(unsigned char command, unsigned char *sendData, unsigned char sendLen, unsigned char *backData, unsigned int *backLen);

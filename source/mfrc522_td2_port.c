@@ -4,28 +4,8 @@
  *  Created on: 21 ene. 2026
  *      Author: Ignacio
  */
-// MY DEFS
-#include "my_defs.h"
-//--------------------------------------------------------------//
-#include "mfrc522_td2.h"
-// LPC845
-#include "fsl_clock.h"
-#include "fsl_swm.h"
-#include "fsl_gpio.h"
-#include "fsl_spi.h"
-#include "fsl_debug_console.h"
-#include "board.h"
-#include "pin_mux.h"
-#include "fsl_common.h"
 
-//---------------------------------------------------------------//
-// CONTROL PINS
-//---------------------------------------------------------------//
-#define CS_PIN			RFID_SS_PIN
-#define RST_PIN         RFID_RST_PIN
-//#define IRQ_PIN         0xFF
-#define MFRC522_RST(x)  GPIO_PinWrite(GPIO, 0, RST_PIN, x)
-#define MFRC522_CS(x)   GPIO_PinWrite(GPIO, 0, CS_PIN, x)
+#include "mfrc522_td2_port.h"
 
 // SPI GLOBAL VARIABLES
 uint32_t srcFreq;

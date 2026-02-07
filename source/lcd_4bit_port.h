@@ -8,6 +8,7 @@
 #ifndef LCD_4BIT_PORT_H_
 #define LCD_4BIT_PORT_H_
 
+#include "lcd_4bit.h"
 // MY DEFS
 #include "my_defs.h"
 /*-------------------------------------------------------------------*/
@@ -29,5 +30,11 @@
 
 #define DELAY_SHORT	600		// 200us @ 24MHz
 #define DELAY_LONG	6000	// 2ms @ 24MHz
+
+static inline void lcd_delay(uint32_t dl)
+{
+	uint32_t d;
+	for(d=0;d<dl;d++);
+}
 /*-------------------------------------------------------------------*/
 #endif /* LCD_4BIT_PORT_H_ */

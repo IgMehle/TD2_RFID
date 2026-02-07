@@ -6,6 +6,7 @@
  */
 
 #include "mfrc522_td2.h"
+#include "mfrc522_td2_port.h"
 
 volatile uint8_t mfrc522_registros[64] = {0};
 #define PEEK(reg) mfrc522_registros[reg] = readMFRC522(reg);

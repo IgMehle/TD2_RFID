@@ -10,6 +10,8 @@
 
 #include <stdint.h>
 #include <ctype.h>
+// MY DEFS
+#include "my_defs.h"
 
 #define KEYPAD_ROWS 4
 #define KEYPAD_COLS 4
@@ -42,7 +44,7 @@ void keypad_row_delay(void);
 
 // FUNCTIONS
 uint8_t keypad_scan(void);
-void keypad_update(void);
+uint8_t keypad_update(void);
 char keypad_readkey(void);
 uint8_t keypad_readpin(char first_dig, char *pin);
 
