@@ -107,12 +107,8 @@ char keypad_readkey(void)
 	k = key_bf;
 	key_bf = 0;
 	// DEBUG de secuencia de lecturas de keypad_scan
-//	uint8_t j = 0;
-//	while (scan_bf.count > 0) {
-//		PRINTF("%2X ", &scan_bf.bf[j]);
-//		j++;
-//		scan_bf.count--;
-//	}
+	PRINTF("\nLast: %2x - Count: %3d - Valid: %2x",
+			key.last_key, key.counter, key.valid_key);
 	// __enable_irq();
 	return k;
 }

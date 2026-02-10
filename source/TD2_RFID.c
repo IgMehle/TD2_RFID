@@ -32,6 +32,7 @@
 //---------------------------------------------------------------//
 volatile uint32_t count_mseg = 0;
 volatile uint8_t led_run = 0;
+volatile uint16_t toggles = 0;
 
 // TIMERS NAMES
 uint8_t timer_ledrun;
@@ -62,20 +63,27 @@ int main(void)
 	// i2c_init();
 	// spi_init();
 	// uart_init();
+	LCD_BL_OFF();
+	BUZZER_OFF();
+	lcd_4bit_init();
+	lcd4_print("Hola!!", 1);
+	char s_toggles[17];
 
 	// TIMERS
 	init_timers();
 	timer_ledrun = give_timer(500, toggle_ledrun);
 	on_timer(timer_ledrun, TIMER_PERIODIC);
-	timer_keypad = give_timer(5, keypad_update);
-	on_timer(timer_keypad, TIMER_PERIODIC);
-	timer_buzzer = give_timer(20, off_buzzer);
+//	timer_keypad = give_timer(5, keypad_update);
+//	on_timer(timer_keypad, TIMER_PERIODIC);
+//	timer_buzzer = give_timer(20, off_buzzer);
 
 	// LOOP DE EJECUCION
     while (1) {
-    	PRINTF("\nTecla: ");
-    	test_keypad();
-    	delay_ms(200);
+    	// PRINTF("\nTecla: ");
+    	//test_keypad();
+    	delay_ms(100);
+    	itoa(toggles, s_toggles, 10);
+    	lcd4_print(s_toggles, 2);
     }
     return 0;
 }
@@ -105,6 +113,7 @@ uint8_t toggle_ledrun(void)
 	// Toggle led
 	led_run ^= 1;
 	GPIO_PinWrite(GPIO, 1, LEDRUN_PIN, led_run);
+	toggles++;
 	return 0;
 }
 
@@ -112,15 +121,15 @@ void test_keypad(void)
 {
 	static char tecla = 0;
 	tecla = keypad_readkey();
-	PRINTF("%d", tecla);
+	// PRINTF("%d", tecla);
 	if (tecla != KEY_NONE) {
-		BUZZER_ON;
+		BUZZER_ON();
 		on_timer(timer_buzzer, TIMER_ONESHOT);
 	}
 }
 
 uint8_t off_buzzer(void)
 {
-	BUZZER_OFF;
+	BUZZER_OFF();
 	return 0;
 }
