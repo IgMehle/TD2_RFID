@@ -37,7 +37,7 @@ volatile uint16_t toggles = 0;
 // TIMERS NAMES
 uint8_t timer_ledrun;
 uint8_t timer_keypad;
-uint8_t timer_buzzer;
+uint8_t timer_ledoff;
 //---------------------------------------------------------------//
 // Prototypes
 //---------------------------------------------------------------//
@@ -46,7 +46,7 @@ void test_keypad(void);
 
 // TIMER CALLBACKS
 uint8_t toggle_ledrun(void);
-uint8_t off_buzzer(void);
+uint8_t off_ledr(void);
 
 /*
  * @brief   Application entry point.
@@ -73,17 +73,17 @@ int main(void)
 	init_timers();
 	timer_ledrun = give_timer(500, toggle_ledrun);
 	on_timer(timer_ledrun, TIMER_PERIODIC);
-//	timer_keypad = give_timer(5, keypad_update);
-//	on_timer(timer_keypad, TIMER_PERIODIC);
-//	timer_buzzer = give_timer(20, off_buzzer);
+	//timer_keypad = give_timer(5, keypad_update);
+	//on_timer(timer_keypad, TIMER_PERIODIC);
+	//timer_ledoff = give_timer(20, off_ledr);
 
 	// LOOP DE EJECUCION
     while (1) {
     	// PRINTF("\nTecla: ");
-    	//test_keypad();
-    	delay_ms(100);
+    	test_keypad();
     	itoa(toggles, s_toggles, 10);
     	lcd4_print(s_toggles, 2);
+    	delay_ms(100);
     }
     return 0;
 }
@@ -119,17 +119,25 @@ uint8_t toggle_ledrun(void)
 
 void test_keypad(void)
 {
-	static char tecla = 0;
-	tecla = keypad_readkey();
+	//static char tecla = 0;
+	// tecla = keypad_readkey();
 	// PRINTF("%d", tecla);
-	if (tecla != KEY_NONE) {
-		BUZZER_ON();
-		on_timer(timer_buzzer, TIMER_ONESHOT);
-	}
+	keypad_row_write(0, 0);
+	delay_ms(1);
+	keypad_row_write(0, 1);
+	keypad_row_write(1, 0);
+	delay_ms(1);
+	keypad_row_write(1, 1);
+	keypad_row_write(2, 0);
+	delay_ms(1);
+	keypad_row_write(2, 1);
+	keypad_row_write(3, 0);
+	delay_ms(1);
+	keypad_row_write(3, 1);
 }
 
-uint8_t off_buzzer(void)
+uint8_t off_ledr(void)
 {
-	BUZZER_OFF();
+	LED_ERR_OFF();
 	return 0;
 }
