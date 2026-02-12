@@ -147,7 +147,7 @@ uint8_t sak;            // The SAK (Select acknowledge) byte returned from the P
 void mfrc522_init(void);
 void reset(void);
 void antennaOn(void);
-bool isCard(void) ;
+bool isCard(void);
 void setBitMask(uint8_t reg, uint8_t mask);
 unsigned char MFRC522ToCard(unsigned char command, unsigned char *sendData, unsigned char sendLen, unsigned char *backData, unsigned int *backLen);
 unsigned char MFRC522Request(unsigned char reqMode, unsigned char *TagType);

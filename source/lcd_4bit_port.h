@@ -32,11 +32,4 @@
 #define DELAY_LONG	6000	// 2ms @ 24MHz
 
 /*-------------------------------------------------------------------*/
-void lcd_pins_init(void);
-static inline void lcd_delay(uint32_t dl)
-{
-	uint32_t d;
-	for(d = 0; d < dl; d++);
-}
-/*-------------------------------------------------------------------*/
 #endif /* LCD_4BIT_PORT_H_ */

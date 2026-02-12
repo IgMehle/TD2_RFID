@@ -13,8 +13,8 @@
 #define RTC_ADDR		0x68	// Address DS3231 0b1101000
 #define RTC_OK			0
 #define RTC_ERR			1
-#define BIN2BCD(x)		((unsigned char) (((x / 10 ) << 4) | ((x % 10))))
-#define BCD2BIN(x)		((unsigned char) ((((x >> 4) & 0x0F) * 10) + (x & 0x0F)))
+#define BIN2BCD(x)		((uint8_t) (((x / 10 ) << 4) | ((x % 10))))
+#define BCD2BIN(x)		((uint8_t) ((((x >> 4) & 0x0F) * 10) + (x & 0x0F)))
 
 typedef struct {
 	uint8_t sec;

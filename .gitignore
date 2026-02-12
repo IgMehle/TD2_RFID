@@ -23,6 +23,7 @@ Release/
 *.launch
 *.log
 .settings/*.prefs.bak
+.settings/language.settings.xml
 
 # OS noise
 .DS_Store

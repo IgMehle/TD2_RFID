@@ -33,20 +33,23 @@
 volatile uint32_t count_mseg = 0;
 volatile uint8_t led_run = 0;
 volatile uint16_t toggles = 0;
+volatile unsigned char serNum[5];
 
 // TIMERS NAMES
 uint8_t timer_ledrun;
 uint8_t timer_keypad;
-uint8_t timer_ledoff;
+uint8_t timer_off;
 //---------------------------------------------------------------//
 // Prototypes
 //---------------------------------------------------------------//
 void delay_ms(uint32_t ms);
 void test_keypad(void);
+void print_time(void);
+void scan_rfid(void);
 
 // TIMER CALLBACKS
 uint8_t toggle_ledrun(void);
-uint8_t off_ledr(void);
+uint8_t off_buzzer(void);
 
 /*
  * @brief   Application entry point.
@@ -60,14 +63,48 @@ int main(void)
 
 	// BOARD INIT
 	gpio_init();
-	// i2c_init();
+	i2c_init();
 	// spi_init();
 	// uart_init();
 	LCD_BL_OFF();
 	BUZZER_OFF();
+
 	lcd_4bit_init();
-	lcd4_print("Hola!!", 1);
+	// lcd4_print("Hola!!", 1);
 	char s_toggles[17];
+
+	uint8_t stat_i2c = 0;
+	rtc_t fyh = {0,0,12,1,1,1,26};
+	stat_i2c = rtc_load(fyh);
+	if (stat_i2c != STATUS_OK) {
+		while (1) {
+			PRINTF("\n[I2C] Error rtc_load()");
+			delay_ms(1000);
+		}
+	}
+
+	uint8_t demo[] = "Hola!";
+	stat_i2c = eeprom_write(demo, 0, sizeof(demo));
+	if (stat_i2c != STATUS_OK) {
+		while (1) {
+			PRINTF("\n[I2C] Error eeprom_write()");
+			delay_ms(1000);
+		}
+	}
+
+	uint8_t lectura[17];
+	stat_i2c = eeprom_read(lectura, 0, sizeof(demo));
+	if (stat_i2c != STATUS_OK) {
+		while (1) {
+			PRINTF("\n[I2C] Error eeprom_read()");
+			delay_ms(1000);
+		}
+	}
+
+	lcd4_print(lectura, 1);
+
+	// mfrc522_spi_config();
+	// mfrc522_init();
 
 	// TIMERS
 	init_timers();
@@ -75,14 +112,21 @@ int main(void)
 	on_timer(timer_ledrun, TIMER_PERIODIC);
 	//timer_keypad = give_timer(5, keypad_update);
 	//on_timer(timer_keypad, TIMER_PERIODIC);
-	//timer_ledoff = give_timer(20, off_ledr);
+	timer_off = give_timer(50, off_buzzer);
 
+	uint8_t loops = 0;
 	// LOOP DE EJECUCION
     while (1) {
     	// PRINTF("\nTecla: ");
-    	test_keypad();
-    	itoa(toggles, s_toggles, 10);
-    	lcd4_print(s_toggles, 2);
+    	// test_keypad();
+    	// itoa(toggles, s_toggles, 10);
+    	// lcd4_print(s_toggles, 2);
+    	scan_rfid();
+    	loops++;
+    	if (loops > 9) {
+    		print_time();
+    		loops = 0;
+    	}
     	delay_ms(100);
     }
     return 0;
@@ -136,8 +180,52 @@ void test_keypad(void)
 	keypad_row_write(3, 1);
 }
 
-uint8_t off_ledr(void)
+void print_time(void)
 {
-	LED_ERR_OFF();
+	rtc_t time;
+	uint8_t status = 0;
+	char s_time[17];
+
+	status = rtc_read(&time);
+	if (status != STATUS_OK) {
+		while (1) {
+			PRINTF("\n[I2C] Error rtc_read()");
+			delay_ms(1000);
+		}
+	}
+
+	sprintf(s_time, "%2d/2d/2d 2d:2d:2d",
+			time.day, time.month, time.year,
+			time.hour, time.min, time.sec);
+	lcd4_print(s_time, 2);
+	PRINTF("\n%s", s_time);
+}
+
+void scan_rfid(void)
+{
+	static char s_uid[17];
+
+	if (isCard()) {
+		if (readCardSerial()) {
+			sprintf(s_uid, "%2x 2x 2x 2x",
+					serNum[0],
+					serNum[1],
+					serNum[2],
+					serNum[3]);
+
+			BUZZER_ON();
+			RELAY_ON();
+			on_timer(timer_off, TIMER_ONESHOT);
+
+			lcd4_print(s_uid, 1);
+			PRINTF("\n%s", s_uid);
+		}
+	}
+}
+
+uint8_t off_buzzer(void)
+{
+	BUZZER_OFF();
+	RELAY_OFF();
 	return 0;
 }

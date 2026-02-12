@@ -9,6 +9,7 @@
 #define LCD_4BIT_H_
 
 #include <stdint.h>
+#include "lcd_4bit_port.h"
 
 //#define LCD_BUSY	1
 //#define LCD_NBUSY	0
@@ -27,7 +28,12 @@ typedef union {
 	} d;
 } lcd_t;
 /*-------------------------------------------------------------------*/
-static inline void lcd_delay(uint32_t dl);
+void lcd_pins_init(void);
+static inline void lcd_delay(uint32_t dl)
+{
+	uint32_t d;
+	for(d = 0; d < dl; d++);
+}
 /*-------------------------------------------------------------------*/
 void lcd_4bit_init(void);
 void lcd4_write_com(unsigned char w4b);
