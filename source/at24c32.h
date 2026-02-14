@@ -10,7 +10,7 @@
 
 #include <stdint.h>
 
-#define EEPROM_ADDR 		0x50
+#define EEPROM_ADDR 		0x57
 #define EEPROM_PAGE_SIZE 	0x20
 #define EEPROM_OK			0
 #define EEPROM_ERR			1

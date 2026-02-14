@@ -66,7 +66,9 @@ int main(void)
 	i2c_init();
 	// spi_init();
 	// uart_init();
-	LCD_BL_OFF();
+	LCD_BL_ON();
+	BUZZER_ON();
+	delay_ms(500);
 	BUZZER_OFF();
 
 	lcd_4bit_init();
@@ -121,7 +123,7 @@ int main(void)
     	// test_keypad();
     	// itoa(toggles, s_toggles, 10);
     	// lcd4_print(s_toggles, 2);
-    	scan_rfid();
+    	// scan_rfid();
     	loops++;
     	if (loops > 9) {
     		print_time();
