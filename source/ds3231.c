@@ -53,3 +53,14 @@ void rtc_time2bytes(rtc_t data, uint8_t *bytes)
 	bytes[5] = data.month;
 	bytes[6] = data.year;
 }
+
+void rtc_bytes2time(uint8_t *bytes, rtc_t *time)
+{
+	time->sec = bytes[0];
+	time->min = bytes[1];
+	time->hour = bytes[2];
+	time->weekday = bytes[3];
+	time->day = bytes[4];
+	time->month = bytes[5];
+	time->year = bytes[6];
+}

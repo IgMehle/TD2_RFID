@@ -33,5 +33,6 @@ uint8_t rtc_i2c_read(uint8_t *bf, uint8_t len, uint8_t ptr);
 uint8_t rtc_load(rtc_t data);
 uint8_t rtc_read(rtc_t *data);
 void rtc_time2bytes(rtc_t time, uint8_t *bytes);
+void rtc_bytes2time(uint8_t *bytes, rtc_t *time);
 
 #endif /* DS3231_H_ */

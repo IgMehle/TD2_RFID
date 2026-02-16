@@ -44,7 +44,8 @@ uint8_t timer_off;
 //---------------------------------------------------------------//
 void delay_ms(uint32_t ms);
 void test_keypad(void);
-void print_time(void);
+void print_date(void);
+void save_time(void);
 void scan_rfid(void);
 
 // TIMER CALLBACKS
@@ -66,27 +67,32 @@ int main(void)
 	i2c_init();
 	// spi_init();
 	// uart_init();
-	LCD_BL_ON();
-	BUZZER_ON();
-	delay_ms(500);
-	BUZZER_OFF();
+//	LCD_BL_ON();
+//	BUZZER_ON();
+//	delay_ms(500);
+//	BUZZER_OFF();
 
 	lcd_4bit_init();
-	// lcd4_print("Hola!!", 1);
+	lcd4_print("Hola Nacho!", 1);
 	char s_toggles[17];
 
 	uint8_t stat_i2c = 0;
-	rtc_t fyh = {0,0,12,1,1,1,26};
-	stat_i2c = rtc_load(fyh);
-	if (stat_i2c != STATUS_OK) {
-		while (1) {
-			PRINTF("\n[I2C] Error rtc_load()");
-			delay_ms(1000);
-		}
-	}
+	rtc_t fyh;
+	uint8_t fyh_bytes[7];
 
-	uint8_t demo[] = "Hola!";
-	stat_i2c = eeprom_write(demo, 0, sizeof(demo));
+	// init test
+	fyh.sec = 0;
+	fyh.min = 0;
+	fyh.hour = 12;
+	fyh.weekday = 1;
+	fyh.day = 16;
+	fyh.month = 2;
+	fyh.year = 26;
+
+	// Guardo primera fyh en eeprom
+	rtc_time2bytes(fyh, fyh_bytes);
+
+	stat_i2c = eeprom_write(fyh_bytes, 0x0010, sizeof(fyh_bytes));
 	if (stat_i2c != STATUS_OK) {
 		while (1) {
 			PRINTF("\n[I2C] Error eeprom_write()");
@@ -94,8 +100,8 @@ int main(void)
 		}
 	}
 
-	uint8_t lectura[17];
-	stat_i2c = eeprom_read(lectura, 0, sizeof(demo));
+	// Levanto fyh de eeprom
+	stat_i2c = eeprom_read(fyh_bytes, 0x0010, sizeof(fyh_bytes));
 	if (stat_i2c != STATUS_OK) {
 		while (1) {
 			PRINTF("\n[I2C] Error eeprom_read()");
@@ -103,7 +109,23 @@ int main(void)
 		}
 	}
 
-	lcd4_print(lectura, 1);
+	// Convierto a rtc_t
+	fyh.sec 	= fyh_bytes[0];
+	fyh.min 	= fyh_bytes[1];
+	fyh.hour 	= fyh_bytes[2];
+	fyh.weekday = fyh_bytes[3];
+	fyh.day 	= fyh_bytes[4];
+	fyh.month 	= fyh_bytes[5];
+	fyh.year 	= fyh_bytes[6];
+
+	// Cargo fyh en RTC
+	stat_i2c = rtc_load(fyh);
+	if (stat_i2c != STATUS_OK) {
+		while (1) {
+			PRINTF("\n[I2C] Error rtc_load()");
+			delay_ms(1000);
+		}
+	}
 
 	// mfrc522_spi_config();
 	// mfrc522_init();
@@ -126,7 +148,7 @@ int main(void)
     	// scan_rfid();
     	loops++;
     	if (loops > 9) {
-    		print_time();
+    		print_date();
     		loops = 0;
     	}
     	delay_ms(100);
@@ -182,13 +204,14 @@ void test_keypad(void)
 	keypad_row_write(3, 1);
 }
 
-void print_time(void)
+void print_date(void)
 {
-	rtc_t time;
+	rtc_t date;
+	uint8_t date_bytes[sizeof(rtc_t)];
 	uint8_t status = 0;
-	char s_time[17];
+	char date_str[17];
 
-	status = rtc_read(&time);
+	status = rtc_read(&date);
 	if (status != STATUS_OK) {
 		while (1) {
 			PRINTF("\n[I2C] Error rtc_read()");
@@ -196,11 +219,26 @@ void print_time(void)
 		}
 	}
 
-	sprintf(s_time, "%2d/2d/2d 2d:2d:2d",
-			time.day, time.month, time.year,
-			time.hour, time.min, time.sec);
-	lcd4_print(s_time, 2);
-	PRINTF("\n%s", s_time);
+	if (PULSADOR() == 0) {
+		BUZZER_ON();
+		rtc_time2bytes(date, date_bytes);
+		status = eeprom_write(date_bytes, 0x0010, sizeof(date_bytes));
+		if (status != STATUS_OK) {
+			while (1) {
+				PRINTF("\n[I2C] Error eeprom_write()");
+				delay_ms(1000);
+			}
+		}
+		PRINTF("\n[OK] Saved time on 0x0010");
+		delay_ms(50);
+		BUZZER_OFF();
+	}
+
+	sprintf(date_str, "%02d/%02d %02d:%02d:%02d",
+			date.day, date.month,
+			date.hour, date.min, date.sec);
+	lcd4_print(date_str, 2);
+	PRINTF("\n[OK] Date: %s", date_str);
 }
 
 void scan_rfid(void)
@@ -220,7 +258,7 @@ void scan_rfid(void)
 			on_timer(timer_off, TIMER_ONESHOT);
 
 			lcd4_print(s_uid, 1);
-			PRINTF("\n%s", s_uid);
+			PRINTF("\n[RFID] %s", s_uid);
 		}
 	}
 }
