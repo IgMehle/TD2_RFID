@@ -11,7 +11,7 @@
 static const char keys[] = { '1','2','3','A','4','5','6','B','7','8','9','C','*','0','#','D' };
 static volatile key_t key = {KEY_NONE, 0, KEY_NONE};
 static volatile kp_state_t kp_state = KP_IDLE;
-static volatile char key_bf = 0;
+static volatile char key_bf = KEY_NONE;
 //typedef struct scan_bf {
 //	uint8_t bf[128];
 //	uint8_t count;
@@ -81,7 +81,7 @@ uint8_t keypad_update(void)
 		if (key.valid_key != KEY_NONE) {
 			// Tecla pulsada
 			// Guardo en buffer si esta vacio
-			if (key_bf == 0) key_bf = keys[key.valid_key];
+			if (key_bf == KEY_NONE) key_bf = keys[key.valid_key];
 			// Cambio a estado pressed
 			kp_state = KP_PRESSED;
 		}
@@ -105,10 +105,8 @@ char keypad_readkey(void)
 	// __disable_irq();
 	// Tomo la tecla del buffer
 	k = key_bf;
-	key_bf = 0;
+	key_bf = KEY_NONE;
 	// DEBUG de secuencia de lecturas de keypad_scan
-	PRINTF("\nLast: %2x - Count: %3d - Valid: %2x",
-			key.last_key, key.counter, key.valid_key);
 	// __enable_irq();
 	return k;
 }

@@ -33,6 +33,7 @@
 volatile uint32_t count_mseg = 0;
 volatile uint8_t led_run = 0;
 volatile uint16_t toggles = 0;
+static const char kbd_keys[] = { '1','2','3','A','4','5','6','B','7','8','9','C','*','0','#','D' };
 volatile unsigned char serNum[5];
 
 // TIMERS NAMES
@@ -67,7 +68,7 @@ int main(void)
 	i2c_init();
 	// spi_init();
 	// uart_init();
-//	LCD_BL_ON();
+	LCD_BL_ON();
 //	BUZZER_ON();
 //	delay_ms(500);
 //	BUZZER_OFF();
@@ -80,25 +81,25 @@ int main(void)
 	rtc_t fyh;
 	uint8_t fyh_bytes[7];
 
-	// init test
-	fyh.sec = 0;
-	fyh.min = 0;
-	fyh.hour = 12;
-	fyh.weekday = 1;
-	fyh.day = 16;
-	fyh.month = 2;
-	fyh.year = 26;
-
-	// Guardo primera fyh en eeprom
-	rtc_time2bytes(fyh, fyh_bytes);
-
-	stat_i2c = eeprom_write(fyh_bytes, 0x0010, sizeof(fyh_bytes));
-	if (stat_i2c != STATUS_OK) {
-		while (1) {
-			PRINTF("\n[I2C] Error eeprom_write()");
-			delay_ms(1000);
-		}
-	}
+//	// init test
+//	fyh.sec = 0;
+//	fyh.min = 0;
+//	fyh.hour = 12;
+//	fyh.weekday = 1;
+//	fyh.day = 16;
+//	fyh.month = 2;
+//	fyh.year = 26;
+//
+//	// Guardo primera fyh en eeprom
+//	rtc_time2bytes(fyh, fyh_bytes);
+//
+//	stat_i2c = eeprom_write(fyh_bytes, 0x0010, sizeof(fyh_bytes));
+//	if (stat_i2c != STATUS_OK) {
+//		while (1) {
+//			PRINTF("\n[I2C] Error eeprom_write()");
+//			delay_ms(1000);
+//		}
+//	}
 
 	// Levanto fyh de eeprom
 	stat_i2c = eeprom_read(fyh_bytes, 0x0010, sizeof(fyh_bytes));
@@ -134,15 +135,15 @@ int main(void)
 	init_timers();
 	timer_ledrun = give_timer(500, toggle_ledrun);
 	on_timer(timer_ledrun, TIMER_PERIODIC);
-	//timer_keypad = give_timer(5, keypad_update);
-	//on_timer(timer_keypad, TIMER_PERIODIC);
-	timer_off = give_timer(50, off_buzzer);
+	timer_keypad = give_timer(5, keypad_update);
+	on_timer(timer_keypad, TIMER_PERIODIC);
+	timer_off = give_timer(20, off_buzzer);
 
 	uint8_t loops = 0;
 	// LOOP DE EJECUCION
     while (1) {
     	// PRINTF("\nTecla: ");
-    	// test_keypad();
+    	test_keypad();
     	// itoa(toggles, s_toggles, 10);
     	// lcd4_print(s_toggles, 2);
     	// scan_rfid();
@@ -187,21 +188,13 @@ uint8_t toggle_ledrun(void)
 
 void test_keypad(void)
 {
-	//static char tecla = 0;
-	// tecla = keypad_readkey();
-	// PRINTF("%d", tecla);
-	keypad_row_write(0, 0);
-	delay_ms(1);
-	keypad_row_write(0, 1);
-	keypad_row_write(1, 0);
-	delay_ms(1);
-	keypad_row_write(1, 1);
-	keypad_row_write(2, 0);
-	delay_ms(1);
-	keypad_row_write(2, 1);
-	keypad_row_write(3, 0);
-	delay_ms(1);
-	keypad_row_write(3, 1);
+	static char tecla;
+	tecla = keypad_readkey();
+	if (tecla != KEY_NONE) {
+		PRINTF("%c", tecla);
+		BUZZER_ON();
+		on_timer(timer_off, TIMER_ONESHOT);
+	}
 }
 
 void print_date(void)
@@ -229,16 +222,22 @@ void print_date(void)
 				delay_ms(1000);
 			}
 		}
-		PRINTF("\n[OK] Saved time on 0x0010");
+		//PRINTF("\n[OK] Saved time on 0x0010");
 		delay_ms(50);
 		BUZZER_OFF();
 	}
 
-	sprintf(date_str, "%02d/%02d %02d:%02d:%02d",
-			date.day, date.month,
-			date.hour, date.min, date.sec);
+	//sprintf(date_str, "%02d/%02d %02d:%02d:%02d",
+	//		date.day, date.month,
+	//		date.hour, date.min, date.sec);
 	lcd4_print(date_str, 2);
-	PRINTF("\n[OK] Date: %s", date_str);
+	//PRINTF("\n[OK] Date: %s", date_str);
+}
+
+uint8_t off_buzzer(void)
+{
+	BUZZER_OFF();
+	return 0;
 }
 
 void scan_rfid(void)
@@ -247,7 +246,7 @@ void scan_rfid(void)
 
 	if (isCard()) {
 		if (readCardSerial()) {
-			sprintf(s_uid, "%2x 2x 2x 2x",
+			sprintf(s_uid, "%02x %02x %02x %02x",
 					serNum[0],
 					serNum[1],
 					serNum[2],
@@ -261,11 +260,4 @@ void scan_rfid(void)
 			PRINTF("\n[RFID] %s", s_uid);
 		}
 	}
-}
-
-uint8_t off_buzzer(void)
-{
-	BUZZER_OFF();
-	RELAY_OFF();
-	return 0;
 }

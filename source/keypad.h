@@ -17,6 +17,8 @@
 #define KEYPAD_COLS 4
 #define KEY_NONE	0xFF
 #define DEBOUNCE_N  4   // 4 muestras * 5ms = 20ms
+#define ROW_ON		0
+#define ROW_OFF		1
 #define COL_ACTIVE	1
 #define PIN_LEN   	4
 #define PIN_OK    	0
