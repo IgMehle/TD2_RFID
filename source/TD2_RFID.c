@@ -40,6 +40,7 @@ volatile unsigned char serNum[5];
 uint8_t timer_ledrun;
 uint8_t timer_keypad;
 uint8_t timer_off;
+uint8_t timer_relay;
 //---------------------------------------------------------------//
 // Prototypes
 //---------------------------------------------------------------//
@@ -53,6 +54,7 @@ void buzzer_beep(uint32_t ms);
 // TIMER CALLBACKS
 uint8_t toggle_ledrun(void);
 uint8_t off_buzzer(void);
+uint8_t off_relay(void);
 
 /*
  * @brief   Application entry point.
@@ -67,7 +69,7 @@ int main(void)
 	// BOARD INIT
 	gpio_init();
 	i2c_init();
-	// spi_init();
+	spi_init();
 	// uart_init();
 	LCD_BL_ON();
 //	BUZZER_ON();
@@ -129,8 +131,8 @@ int main(void)
 		}
 	}
 
-	// mfrc522_spi_config();
-	// mfrc522_init();
+	mfrc522_spi_config();
+	mfrc522_init();
 
 	// TIMERS
 	init_timers();
@@ -139,6 +141,7 @@ int main(void)
 	timer_keypad = give_timer(5, keypad_update);
 	on_timer(timer_keypad, TIMER_PERIODIC);
 	timer_off = give_timer(20, off_buzzer);
+	timer_relay = give_timer(1000, off_relay);
 
 	uint8_t loops = 0;
 	// LOOP DE EJECUCION
@@ -147,7 +150,7 @@ int main(void)
     	test_keypad();
     	// itoa(toggles, s_toggles, 10);
     	// lcd4_print(s_toggles, 2);
-    	// scan_rfid();
+    	scan_rfid();
     	loops++;
     	if (loops > 9) {
     		print_date();
@@ -232,9 +235,9 @@ void print_date(void)
 		BUZZER_OFF();
 	}
 
-	//sprintf(date_str, "%02d/%02d %02d:%02d:%02d",
-	//		date.day, date.month,
-	//		date.hour, date.min, date.sec);
+	sprintf(date_str, "%02d/%02d %02d:%02d:%02d",
+			date.day, date.month,
+			date.hour, date.min, date.sec);
 	lcd4_print(date_str, 2);
 	//PRINTF("\n[OK] Date: %s", date_str);
 }
@@ -264,12 +267,18 @@ void scan_rfid(void)
 					serNum[2],
 					serNum[3]);
 
-			BUZZER_ON();
 			RELAY_ON();
-			on_timer(timer_off, TIMER_ONESHOT);
+			on_timer(timer_relay, TIMER_ONESHOT);
+			buzzer_beep(100);
 
 			lcd4_print(s_uid, 1);
 			PRINTF("\n[RFID] %s", s_uid);
 		}
 	}
+}
+
+uint8_t off_relay(void)
+{
+	RELAY_OFF();
+	return 0;
 }
