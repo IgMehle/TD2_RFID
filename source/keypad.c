@@ -111,7 +111,7 @@ char keypad_readkey(void)
 	return k;
 }
 
-uint8_t keypad_readpin(char first_dig, char *pin)
+uint8_t keypad_readpin(char first_dig, char *pin, void (*beep_func)(uint32_t))
 {
 	uint8_t i = 0;
 	char k;
@@ -129,7 +129,9 @@ uint8_t keypad_readpin(char first_dig, char *pin)
 	while(1) {
 		// Leo tecla
 		k = keypad_readkey();
-		if (k == 0) continue;
+		if (k == KEY_NONE) continue;
+		// Llamo a beep_func() si la tecla es valida
+		beep_func(20);
 
 		// Cancelacion
 		if (k == 'C') {

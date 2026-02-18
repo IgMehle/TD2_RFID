@@ -33,7 +33,7 @@
 volatile uint32_t count_mseg = 0;
 volatile uint8_t led_run = 0;
 volatile uint16_t toggles = 0;
-static const char kbd_keys[] = { '1','2','3','A','4','5','6','B','7','8','9','C','*','0','#','D' };
+// static const char kbd_keys[] = { '1','2','3','A','4','5','6','B','7','8','9','C','*','0','#','D' };
 volatile unsigned char serNum[5];
 
 // TIMERS NAMES
@@ -48,6 +48,7 @@ void test_keypad(void);
 void print_date(void);
 void save_time(void);
 void scan_rfid(void);
+void buzzer_beep(uint32_t ms);
 
 // TIMER CALLBACKS
 uint8_t toggle_ledrun(void);
@@ -189,11 +190,15 @@ uint8_t toggle_ledrun(void)
 void test_keypad(void)
 {
 	static char tecla;
+	static uint8_t pin_stat;
+	char pin[5];
 	tecla = keypad_readkey();
 	if (tecla != KEY_NONE) {
 		PRINTF("%c", tecla);
-		BUZZER_ON();
-		on_timer(timer_off, TIMER_ONESHOT);
+		buzzer_beep(20);
+	}
+	if (tecla >= '0' && tecla <= '9') {
+		pin_stat = keypad_readpin(tecla, pin, buzzer_beep);
 	}
 }
 
@@ -232,6 +237,13 @@ void print_date(void)
 	//		date.hour, date.min, date.sec);
 	lcd4_print(date_str, 2);
 	//PRINTF("\n[OK] Date: %s", date_str);
+}
+
+void buzzer_beep(uint32_t ms)
+{
+	resize_timer(timer_off, ms);
+	BUZZER_ON();
+	on_timer(timer_off, TIMER_ONESHOT);
 }
 
 uint8_t off_buzzer(void)

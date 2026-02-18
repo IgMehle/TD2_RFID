@@ -33,13 +33,13 @@ void keypad_show_pin(char *pin, uint8_t hide)
 	if (hide == PIN_SHOW) {
 		// mostrar pin
 		// lcd4_print(pin, PIN_LINE);
-		// printf("\r%s", pin);
+		PRINTF("\r%s", pin);
 	}
 	else {
 		for (uint8_t i = 0; i < n; i++) ast[i] = '*';
 		ast[n] = '\0';
 		//lcd4_print(ast, PIN_LINE);
-		// printf("\r%s", ast);
+		PRINTF("\r%s", ast);
 	}
 }
 
