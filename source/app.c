@@ -13,10 +13,10 @@ uint8_t header_config(void)
 	uint8_t status = STATUS_OK;
 	uint8_t uid[5];
 
-	status = load_header(&header);
+	status = read_header(&header);
 	if (status != STATUS_OK) error_msg(status, "Error load_header()");
 
-	// CONFIGURACION INICIAL
+	///// CONFIGURACION INICIAL /////
 	if (strcmp(header.firma, "RFID") != 0) {
 		// Cargo firma
 		sprintf(header.firma, "RFID");
@@ -35,10 +35,10 @@ uint8_t header_config(void)
 		buzzer_beep(100);
 		// TODO: escanear admin_pin
 		// TODO: asignar settings
-		// Guardar header en memoria
-		status = save_header(&header);
-		if (status != STATUS_OK) error_msg(status, "Error save_header()");
 	}
-	/////
+	////////////////////////////////
+	// Guardar header en memoria
+	status = save_header(&header);
+	if (status != STATUS_OK) error_msg(status, "Error save_header()");
 	return status;
 }

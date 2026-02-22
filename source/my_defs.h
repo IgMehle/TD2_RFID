@@ -131,8 +131,12 @@ uint8_t header_config(void);
 
 ///// UTILS /////
 void buzzer_beep(uint32_t ms, uint8_t timer);
-uint8_t load_header(header_t *header);
+uint8_t read_header(header_t *header);
 uint8_t save_header(header_t *header);
+uint8_t read_user(user_t *user);
+uint8_t save_user(user_t *user);
+uint8_t read_log(log_t *log);
+uint8_t save_log(log_t *log);
 void error_msg(uint8_t error_code, char *text);
 
 #endif /* MY_DEFS_H_ */

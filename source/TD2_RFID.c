@@ -33,7 +33,6 @@
 volatile uint32_t count_mseg = 0;
 volatile uint8_t led_run = 0;
 volatile uint16_t toggles = 0;
-// static const char kbd_keys[] = { '1','2','3','A','4','5','6','B','7','8','9','C','*','0','#','D' };
 volatile unsigned char serNum[5];
 
 // TIMERS ID
@@ -108,6 +107,9 @@ int main(void)
 	on_timer(timers_id.keypad, TIMER_PERIODIC);
 	timers_id.off = give_timer(20, off_buzzer);
 	timers_id.relay = give_timer(1000, off_relay);
+
+	// CONFIG HEADER
+	header_config();
 
 	uint8_t loops = 0;
 	// LOOP DE EJECUCION
