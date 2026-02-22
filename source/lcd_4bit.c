@@ -50,11 +50,11 @@ void lcd4_write_com(unsigned char wb){
 	lcd_delay(DELAY_SHORT);
 }
 /*-------------------------------------------------------------------*/
-void lcd4_write_data(unsigned char wd)
+void lcd4_write_char(char wd)
 {
 	LCD_RS(1);
 	//LCD_RW(0);
-	lcd.data = wd;
+	lcd.data = (uint8_t) wd;
 	LCD_DB7(lcd.d.b7);
 	LCD_DB6(lcd.d.b6);
 	LCD_DB5(lcd.d.b5);
@@ -72,7 +72,7 @@ void lcd4_write_data(unsigned char wd)
 	lcd_delay(DELAY_SHORT);
 }
 /*-------------------------------------------------------------------*/
-void lcd4_print(unsigned char *p,unsigned char r)
+void lcd4_print(char *p, unsigned char r)
 {
 	switch(r)
 	{
@@ -100,7 +100,7 @@ void lcd4_print(unsigned char *p,unsigned char r)
 	SetDDRAMAddress4(r);
 	r = 0;
 	while(r<20){
-		lcd4_write_data(*p);
+		lcd4_write_char(*p);
 		p++;
 		r++;
 		if(*p == 0) r = 20;
