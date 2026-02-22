@@ -48,6 +48,6 @@
 /* ================= PORT 1 ================== */
 #define RELAY_PIN		0
 #define LEDRUN_PIN		1
-#define LEDERR_PIN		2
+#define LEDAUX_PIN		2
 
 #endif /* PINOUT_H_ */

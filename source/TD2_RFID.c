@@ -36,11 +36,9 @@ volatile uint16_t toggles = 0;
 // static const char kbd_keys[] = { '1','2','3','A','4','5','6','B','7','8','9','C','*','0','#','D' };
 volatile unsigned char serNum[5];
 
-// TIMERS NAMES
-uint8_t timer_ledrun;
-uint8_t timer_keypad;
-uint8_t timer_off;
-uint8_t timer_relay;
+// TIMERS ID
+timers_id_t timers_id;
+
 //---------------------------------------------------------------//
 // Prototypes
 //---------------------------------------------------------------//
@@ -49,7 +47,6 @@ void test_keypad(void);
 void print_date(void);
 void save_time(void);
 void scan_rfid(void);
-void buzzer_beep(uint32_t ms);
 
 // TIMER CALLBACKS
 uint8_t toggle_ledrun(void);
@@ -84,43 +81,12 @@ int main(void)
 	rtc_t fyh;
 	uint8_t fyh_bytes[7];
 
-//	// init test
-//	fyh.sec = 0;
-//	fyh.min = 0;
-//	fyh.hour = 12;
-//	fyh.weekday = 1;
-//	fyh.day = 16;
-//	fyh.month = 2;
-//	fyh.year = 26;
-//
-//	// Guardo primera fyh en eeprom
-//	rtc_time2bytes(fyh, fyh_bytes);
-//
-//	stat_i2c = eeprom_write(fyh_bytes, 0x0010, sizeof(fyh_bytes));
-//	if (stat_i2c != STATUS_OK) {
-//		while (1) {
-//			PRINTF("\n[I2C] Error eeprom_write()");
-//			delay_ms(1000);
-//		}
-//	}
-
 	// Levanto fyh de eeprom
-	stat_i2c = eeprom_read(fyh_bytes, 0x0010, sizeof(fyh_bytes));
-	if (stat_i2c != STATUS_OK) {
-		while (1) {
-			PRINTF("\n[I2C] Error eeprom_read()");
-			delay_ms(1000);
-		}
-	}
+	stat_i2c = eeprom_read(fyh_bytes, 0x0030, sizeof(fyh_bytes));
+	if (stat_i2c != STATUS_OK) error_msg(stat_i2c, "Error eeprom_read()");
 
 	// Convierto a rtc_t
-	fyh.sec 	= fyh_bytes[0];
-	fyh.min 	= fyh_bytes[1];
-	fyh.hour 	= fyh_bytes[2];
-	fyh.weekday = fyh_bytes[3];
-	fyh.day 	= fyh_bytes[4];
-	fyh.month 	= fyh_bytes[5];
-	fyh.year 	= fyh_bytes[6];
+	rtc_bytes2time(fyh_bytes, &fyh);
 
 	// Cargo fyh en RTC
 	stat_i2c = rtc_load(fyh);
@@ -136,12 +102,12 @@ int main(void)
 
 	// TIMERS
 	init_timers();
-	timer_ledrun = give_timer(500, toggle_ledrun);
-	on_timer(timer_ledrun, TIMER_PERIODIC);
-	timer_keypad = give_timer(5, keypad_update);
-	on_timer(timer_keypad, TIMER_PERIODIC);
-	timer_off = give_timer(20, off_buzzer);
-	timer_relay = give_timer(1000, off_relay);
+	timers_id.ledrun = give_timer(500, toggle_ledrun);
+	on_timer(timers_id.ledrun, TIMER_PERIODIC);
+	timers_id.keypad = give_timer(5, keypad_update);
+	on_timer(timers_id.keypad, TIMER_PERIODIC);
+	timers_id.off = give_timer(20, off_buzzer);
+	timers_id.relay = give_timer(1000, off_relay);
 
 	uint8_t loops = 0;
 	// LOOP DE EJECUCION
@@ -223,7 +189,7 @@ void print_date(void)
 	if (PULSADOR() == 0) {
 		BUZZER_ON();
 		rtc_time2bytes(date, date_bytes);
-		status = eeprom_write(date_bytes, 0x0010, sizeof(date_bytes));
+		status = eeprom_write(date_bytes, 0x0030, sizeof(date_bytes));
 		if (status != STATUS_OK) {
 			while (1) {
 				PRINTF("\n[I2C] Error eeprom_write()");
@@ -240,13 +206,6 @@ void print_date(void)
 			date.hour, date.min, date.sec);
 	lcd4_print(date_str, 2);
 	//PRINTF("\n[OK] Date: %s", date_str);
-}
-
-void buzzer_beep(uint32_t ms)
-{
-	resize_timer(timer_off, ms);
-	BUZZER_ON();
-	on_timer(timer_off, TIMER_ONESHOT);
 }
 
 uint8_t off_buzzer(void)
@@ -268,7 +227,7 @@ void scan_rfid(void)
 					serNum[3]);
 
 			RELAY_ON();
-			on_timer(timer_relay, TIMER_ONESHOT);
+			on_timer(timers_id.relay, TIMER_ONESHOT);
 			buzzer_beep(100);
 
 			lcd4_print(s_uid, 1);

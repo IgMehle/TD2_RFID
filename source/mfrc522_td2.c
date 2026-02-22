@@ -222,7 +222,7 @@ void setBitMask(unsigned char reg, unsigned char mask)
     writeMFRC522(reg, tmp | mask); // set bit mask
 }
 
-bool readCardSerial(void)
+bool readCardSerial(uint8_t *uid)
 {
     /*Lee el valor del tag*/
     unsigned char status;
@@ -230,16 +230,10 @@ bool readCardSerial(void)
 
     // Anti-colisiï¿½n, devuelva el nï¿½mero de serie de tarjeta de 4 bytes
     status = anticoll(str);
-    memcpy(serNum, str, 5);
+    memcpy(uid, str, 5);
 
-    if (status == MI_OK)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    if (status == MI_OK) return true;
+    else return false;
 }
 
 unsigned char anticoll(unsigned char *serNum)

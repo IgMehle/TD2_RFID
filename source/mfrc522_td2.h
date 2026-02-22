@@ -153,7 +153,7 @@ unsigned char MFRC522ToCard(unsigned char command, unsigned char *sendData, unsi
 unsigned char MFRC522Request(unsigned char reqMode, unsigned char *TagType);
 void clearBitMask(unsigned char reg, unsigned char mask);
 void setBitMask(unsigned char reg, unsigned char mask);
-bool readCardSerial(void);
+bool readCardSerial(uint8_t *uid);
 unsigned char anticoll(unsigned char *serNum);
 void halt(void);
 void calculateCRC(unsigned char *pIndata, unsigned char len, unsigned char *pOutData);
