@@ -8,9 +8,6 @@
 #ifndef TIMERS_H_
 #define TIMERS_H_
 
-// MY_DEFS
-#include "my_defs.h"
-
 // TIMER_T
 typedef struct timer {
 	uint8_t name;

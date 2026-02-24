@@ -6,6 +6,7 @@
  */
 
 #include "keypad.h"
+#include "keypad_port.h"
 
 // Variables globales para manejo del teclado
 static const char keys[] = { '1','2','3','A','4','5','6','B','7','8','9','C','*','0','#','D' };

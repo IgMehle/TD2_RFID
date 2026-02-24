@@ -15,12 +15,6 @@
 #define EEPROM_OK			0
 #define EEPROM_ERR			1
 
-// I2C
-uint8_t eeprom_i2c_write(uint8_t *frame, uint8_t len);
-uint8_t eeprom_i2c_read(uint8_t *data, uint8_t *addr, uint8_t len);
-
-// EEPROM
-
 uint8_t eeprom_wait_ready(void);
 
 /// @brief Escribe bytes en la eeprom

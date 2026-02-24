@@ -6,6 +6,7 @@
  */
 
 #include "at24c32.h"
+#include "at24c32_port.h"
 
 uint8_t eeprom_wait_ready()
 {

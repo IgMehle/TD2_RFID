@@ -6,6 +6,7 @@
  */
 
 #include "lcd_4bit.h"
+#include "lcd_4bit_port.h"
 
 volatile lcd_t lcd;
 /*-------------------------------------------------------------------*/

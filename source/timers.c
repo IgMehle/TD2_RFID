@@ -6,6 +6,7 @@
  */
 
 #include "timers.h"
+#include "timers_port.h"
 
 /* -----------------------------------------------------
  * GLOBAL VARIABLES

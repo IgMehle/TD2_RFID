@@ -10,8 +10,6 @@
 
 #include <stdint.h>
 #include <ctype.h>
-// MY DEFS
-#include "my_defs.h"
 
 #define KEYPAD_ROWS 4
 #define KEYPAD_COLS 4
@@ -37,11 +35,6 @@ typedef enum kp_state {
 	KP_IDLE = 0,
 	KP_PRESSED
 } kp_state_t;
-
-// IO
-void keypad_row_write(uint8_t row, uint8_t level);
-uint8_t keypad_col_read(uint8_t col);
-void keypad_row_delay(void);
 
 // UTILS
 void keypad_show_pin(char *pin, uint8_t hide);

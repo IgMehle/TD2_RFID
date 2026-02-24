@@ -28,10 +28,6 @@ typedef struct {
 	uint8_t year;
 } rtc_t;
 
-// I2C
-uint8_t rtc_i2c_write(uint8_t *bf, uint8_t len);
-uint8_t rtc_i2c_read(uint8_t *bf, uint8_t len, uint8_t ptr);
-
 // RTC
 uint8_t rtc_load(rtc_t data);
 uint8_t rtc_read(rtc_t *data);

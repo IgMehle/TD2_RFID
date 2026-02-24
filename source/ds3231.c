@@ -5,6 +5,7 @@
  *      Author: Ignacio
  */
 #include "ds3231.h"
+#include "ds3231_port.h"
 
 uint8_t rtc_load(rtc_t data)
 {

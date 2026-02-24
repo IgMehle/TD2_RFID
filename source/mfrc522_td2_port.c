@@ -5,6 +5,7 @@
  *      Author: Ignacio
  */
 
+#include "mfrc522_td2.h"
 #include "mfrc522_td2_port.h"
 
 // SPI GLOBAL VARIABLES

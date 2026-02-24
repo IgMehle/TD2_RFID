@@ -18,9 +18,7 @@
 /* TODO: insert other include files here. */
 #include "my_defs.h"
 #include "mfrc522_td2.h"
-#include "mfrc522_td2_port.h"
 #include "lcd_4bit.h"
-#include "lcd_4bit_port.h"
 #include "ds3231.h"
 #include "at24c32.h"
 #include "keypad.h"

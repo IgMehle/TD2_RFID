@@ -6,8 +6,9 @@
  */
 
 #include "ds3231.h"
+#include "ds3231_port.h"
 // MY DEFS
-#include "my_defs.h"
+#include "pinout.h"
 
 uint8_t rtc_i2c_write(uint8_t *bf, uint8_t len)
 {

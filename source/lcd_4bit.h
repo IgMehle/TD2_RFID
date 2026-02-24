@@ -9,7 +9,6 @@
 #define LCD_4BIT_H_
 
 #include <stdint.h>
-#include "lcd_4bit_port.h"
 
 //#define LCD_BUSY	1
 //#define LCD_NBUSY	0
