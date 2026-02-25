@@ -9,8 +9,8 @@
 #include "mfrc522_td2_port.h"
 
 // SPI GLOBAL VARIABLES
-uint32_t srcFreq;
-spi_master_config_t userConfig;
+static uint32_t srcFreq;
+static spi_master_config_t userConfig;
 
 void mfrc522_spi_config(void)
 {

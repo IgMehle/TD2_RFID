@@ -7,6 +7,8 @@
 
 #include "keypad.h"
 #include "keypad_port.h"
+// MY DEFS
+#include "pinout.h"
 
 const uint8_t rows[KEYPAD_ROWS] = { KBD_R0_PIN, KBD_R1_PIN, KBD_R2_PIN, KBD_R3_PIN };
 const uint8_t columns[KEYPAD_COLS] = { KBD_C0_PIN, KBD_C1_PIN, KBD_C2_PIN, KBD_C3_PIN };

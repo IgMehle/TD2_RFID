@@ -9,9 +9,11 @@
 #define KEYPAD_PORT_H_
 
 #include "keypad.h"
-// MY DEFS
-#include "my_defs.h"
-
+/*-------------------------------------------------------------------*/
+// LPC845
+#include "fsl_gpio.h"
+#include "fsl_debug_console.h"
+/*-------------------------------------------------------------------*/
 // Ajustar delay segun frecuencia de clock
 #define ROW_DELAY	10
 

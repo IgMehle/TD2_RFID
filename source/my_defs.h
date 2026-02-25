@@ -8,38 +8,12 @@
 #ifndef MY_DEFS_H_
 #define MY_DEFS_H_
 
-// BOARD
-#include "board.h"
-#include "clock_config.h"
-#include "peripherals.h"
-#include "pin_mux.h"
-// DEVICE
-#include "LPC845.h"
-// DRIVERS
-#include "fsl_common.h"
-#include "fsl_gpio.h"
-#include "fsl_swm.h"
-#include "fsl_spi.h"
-#include "fsl_i2c.h"
-#include "fsl_iocon.h"	// For Glitch Filter
-// UTILITIES
-#include "fsl_debug_console.h"
-#include <stdio.h>
 #include <stdint.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <string.h>
-// DRIVERS
-#include "mfrc522_td2.h"
-#include "lcd_4bit.h"
-#include "ds3231.h"
-#include "at24c32.h"
-#include "keypad.h"
-#include "timers.h"
+// LPC845
+#include "LPC845.h"
+#include "fsl_gpio.h"
 // PINOUT
 #include "pinout.h"
-// MY TIMERS
-#include "my_timers.h"
 
 /******************************************
  * 	TAGS
@@ -132,10 +106,10 @@ typedef enum estados {
 void delay_ms(uint32_t ms);
 
 ///// BOARD INIT /////
-void gpio_init(void);
-void i2c_init(void);
-void spi_init(void);
-void uart_init(void);
+void board_gpio_init(void);
+void board_i2c_init(void);
+void board_spi_init(void);
+void board_uart_init(void);
 
 ///// APP /////
 uint8_t header_config(void);

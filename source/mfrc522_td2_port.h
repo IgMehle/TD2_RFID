@@ -10,17 +10,15 @@
 
 #include "mfrc522_td2.h"
 //---------------------------------------------------------------//
-// MY DEFS
-#include "my_defs.h"
 // LPC845
 #include "fsl_clock.h"
 #include "fsl_swm.h"
 #include "fsl_gpio.h"
 #include "fsl_spi.h"
 #include "fsl_debug_console.h"
-#include "board.h"
-#include "pin_mux.h"
-#include "fsl_common.h"
+//---------------------------------------------------------------//
+// MY DEFS
+#include "pinout.h"
 
 //---------------------------------------------------------------//
 // CONTROL PINS

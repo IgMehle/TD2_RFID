@@ -10,11 +10,43 @@
  * @brief   Application entry point.
  */
 
+// BOARD
+#include "board.h"
+#include "clock_config.h"
+#include "peripherals.h"
+#include "pin_mux.h"
+// DEVICE
+#include "LPC845.h"
+// PERIPHERALS
+#include "fsl_common.h"
+#include "fsl_gpio.h"
+#include "fsl_swm.h"
+#include "fsl_spi.h"
+#include "fsl_i2c.h"
+#include "fsl_usart.h"
+// #include "fsl_iocon.h"	// For Glitch Filter
+// UTILITIES
+#include "fsl_debug_console.h"
+#include <stdio.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <string.h>
 
 /* TODO: insert other include files here. */
-
 // MY DEFS
 #include "my_defs.h"
+// DRIVERS
+#include "mfrc522_td2.h"
+#include "lcd_4bit.h"
+#include "ds3231.h"
+#include "at24c32.h"
+#include "keypad.h"
+#include "timers.h"
+// PINOUT
+#include "pinout.h"
+// MY TIMERS
+#include "my_timers.h"
 
 /* TODO: insert other definitions and declarations here. */
 //---------------------------------------------------------------//
@@ -52,10 +84,10 @@ int main(void)
 	(void) SysTick_Config(SystemCoreClock/1000);
 
 	// BOARD INIT
-	gpio_init();
-	i2c_init();
-	spi_init();
-	// uart_init();
+	board_gpio_init();
+	board_i2c_init();
+	board_spi_init();
+	// board_uart_init();
 	LCD_BL_ON();
 //	BUZZER_ON();
 //	delay_ms(500);
@@ -123,7 +155,7 @@ int main(void)
  * -------------------------------------------------------------- */
 void SysTick_Handler(void)
 {
-	// timers
+	// soft timers
     refresh_timers();
     // delay_ms()
     if (count_mseg > 0) count_mseg--;

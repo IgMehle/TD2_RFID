@@ -7,6 +7,9 @@
 
 #include "at24c32.h"
 #include "at24c32_port.h"
+// MY DEFS
+#include "my_defs.h"
+#include "pinout.h"
 
 uint8_t eeprom_i2c_write(uint8_t *frame, uint8_t len)
 {

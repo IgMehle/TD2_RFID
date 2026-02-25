@@ -9,8 +9,12 @@
 #define LCD_4BIT_PORT_H_
 
 #include "lcd_4bit.h"
+/*-------------------------------------------------------------------*/
+// LPC845
+#include "fsl_gpio.h"
+/*-------------------------------------------------------------------*/
 // MY DEFS
-#include "my_defs.h"
+#include "pinout.h"
 /*-------------------------------------------------------------------*/
 // PINOUT GPIO
 #define LCD_DB4(x)			GPIO_PinWrite(GPIO, 0, LCD_DB4_PIN, x)

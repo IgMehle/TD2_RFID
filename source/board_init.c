@@ -5,10 +5,26 @@
  *      Author: Ignacio
  */
 
+//  MY DEFS
 #include "my_defs.h"
-// #include "pinout.h"
+#include "pinout.h"
+// BOARD
+#include "board.h"
+#include "clock_config.h"
+#include "peripherals.h"
+#include "pin_mux.h"
+// DEVICE
+#include "LPC845.h"
+// PERIPHERALS
+#include "fsl_common.h"
+#include "fsl_gpio.h"
+#include "fsl_swm.h"
+#include "fsl_spi.h"
+#include "fsl_i2c.h"
+#include "fsl_usart.h"
+// #include "fsl_iocon.h"	// For Glitch Filter
 
-void gpio_init(void)
+void board_gpio_init(void)
 {
 	GPIO_PortInit(GPIO, 0);
 	GPIO_PortInit(GPIO, 1);
@@ -49,7 +65,7 @@ void gpio_init(void)
 	GPIO_PinInit(GPIO, 1, LEDAUX_PIN, &out_config);
 }
 
-void i2c_init(void)
+void board_i2c_init(void)
 {
 	// const uint32_t baudRate = 100000;
 	// const uint32_t frequency = SystemCoreClock;
@@ -87,7 +103,7 @@ void i2c_init(void)
 //	I2C_MasterInit(I2C1, &masterConfig, frequency);
 }
 
-void spi_init(void)
+void board_spi_init(void)
 {
 	// Config SPI PINS
 	CLOCK_EnableClock(kCLOCK_Swm);
@@ -99,7 +115,7 @@ void spi_init(void)
 	CLOCK_Select(kSPI0_Clk_From_MainClk);
 }
 
-void uart_init(void)
+void board_uart_init(void)
 {
 
 }

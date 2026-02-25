@@ -5,7 +5,41 @@
  *      Author: ThinkPad
  */
 
+// MY DEFS
 #include "my_defs.h"
+// PINOUT
+#include "pinout.h"
+// MY TIMERS
+#include "my_timers.h"
+// BOARD
+#include "board.h"
+#include "clock_config.h"
+#include "peripherals.h"
+#include "pin_mux.h"
+// DEVICE
+#include "LPC845.h"
+// PERIPHERALS
+#include "fsl_common.h"
+#include "fsl_gpio.h"
+#include "fsl_swm.h"
+#include "fsl_spi.h"
+#include "fsl_i2c.h"
+#include "fsl_usart.h"
+// #include "fsl_iocon.h"	// For Glitch Filter
+// UTILITIES
+#include "fsl_debug_console.h"
+#include <stdio.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <string.h>
+// DRIVERS
+#include "mfrc522_td2.h"
+#include "lcd_4bit.h"
+#include "ds3231.h"
+#include "at24c32.h"
+#include "keypad.h"
+#include "timers.h"
 
 void buzzer_beep(uint32_t ms)
 {
@@ -95,22 +129,22 @@ uint8_t save_header(header_t *header)
 
 uint8_t read_user(user_t *user)
 {
-
+	return STATUS_OK;
 }
 
 uint8_t save_user(user_t *user)
 {
-
+	return STATUS_OK;
 }
 
 uint8_t read_log(log_t *log)
 {
-
+	return STATUS_OK;
 }
 
 uint8_t save_log(log_t *log)
 {
-
+	return STATUS_OK;
 }
 
 void error_msg(uint8_t error_code, char *text)
