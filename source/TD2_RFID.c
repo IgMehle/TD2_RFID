@@ -9,29 +9,21 @@
  * @file    TD2_RFID.c
  * @brief   Application entry point.
  */
-#include <stdio.h>
-#include "board.h"
-#include "peripherals.h"
-#include "pin_mux.h"
-#include "clock_config.h"
-#include "fsl_debug_console.h"
-/* TODO: insert other include files here. */
-#include "my_defs.h"
-#include "mfrc522_td2.h"
-#include "lcd_4bit.h"
-#include "ds3231.h"
-#include "at24c32.h"
-#include "keypad.h"
-#include "timers.h"
-/* TODO: insert other definitions and declarations here. */
 
+
+/* TODO: insert other include files here. */
+
+// MY DEFS
+#include "my_defs.h"
+
+/* TODO: insert other definitions and declarations here. */
 //---------------------------------------------------------------//
 // Global Variables
 //---------------------------------------------------------------//
 volatile uint32_t count_mseg = 0;
 volatile uint8_t led_run = 0;
 volatile uint16_t toggles = 0;
-volatile unsigned char serNum[5];
+uint8_t serNum[5];
 
 // TIMERS ID
 timers_id_t timers_id;
@@ -39,7 +31,6 @@ timers_id_t timers_id;
 //---------------------------------------------------------------//
 // Prototypes
 //---------------------------------------------------------------//
-void delay_ms(uint32_t ms);
 void test_keypad(void);
 void print_date(void);
 void save_time(void);
@@ -72,7 +63,7 @@ int main(void)
 
 	lcd_4bit_init();
 	lcd4_print("Hola Nacho!", 1);
-	char s_toggles[17];
+	//char s_toggles[17];
 
 	uint8_t stat_i2c = 0;
 	rtc_t fyh;
@@ -94,7 +85,7 @@ int main(void)
 		}
 	}
 
-	mfrc522_spi_config();
+	// INIT MFRC522
 	mfrc522_init();
 
 	// TIMERS
@@ -107,7 +98,7 @@ int main(void)
 	timers_id.relay = give_timer(1000, off_relay);
 
 	// CONFIG HEADER
-	header_config();
+	// header_config();
 
 	uint8_t loops = 0;
 	// LOOP DE EJECUCION
@@ -219,7 +210,7 @@ void scan_rfid(void)
 	static char s_uid[17];
 
 	if (isCard()) {
-		if (readCardSerial()) {
+		if (readCardSerial(serNum)) {
 			sprintf(s_uid, "%02x %02x %02x %02x",
 					serNum[0],
 					serNum[1],

@@ -9,7 +9,9 @@
 #define TIMERS_PORT_H_
 
 #include "timers.h"
-// MY_DEFS
-#include "my_defs.h"
+// MY TIMERS
+#include "my_timers.h"
+
+#define N_TIMERS	8
 
 #endif /* TIMERS_PORT_H_ */

@@ -46,7 +46,7 @@ void gpio_init(void)
 	// RELAY - LEDS
 	GPIO_PinInit(GPIO, 1, RELAY_PIN, &out_config);
 	GPIO_PinInit(GPIO, 1, LEDRUN_PIN, &out_config);
-	GPIO_PinInit(GPIO, 1, LEDERR_PIN, &out_config);
+	GPIO_PinInit(GPIO, 1, LEDAUX_PIN, &out_config);
 }
 
 void i2c_init(void)

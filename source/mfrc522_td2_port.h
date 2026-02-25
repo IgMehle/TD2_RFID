@@ -34,7 +34,7 @@
 //--------------------------------------------------------------//
 // VARIABLES Y FUNCIONES EXTERNAS
 extern void delay_ms(uint32_t ms); // Delay function prototype
-extern volatile unsigned char serNum[5];
+// extern volatile unsigned char serNum[5];
 
 // PROTOTYPES
 void mfrc522_spi_config(void);

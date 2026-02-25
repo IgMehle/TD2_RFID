@@ -9,8 +9,6 @@
 #define DS3231_PORT_H_
 
 #include "ds3231.h"
-#include <stdint.h>
-#include "fsl_i2c.h"
 // BOARD
 #include "board.h"
 #include "clock_config.h"
@@ -18,6 +16,7 @@
 #include "pin_mux.h"
 // DEVICE
 #include "LPC845.h"
+#include "fsl_i2c.h"
 #include "fsl_debug_console.h"
 
 #define SYSTICK_IRQEN	NVIC_EnableIRQ(SysTick_IRQn)

@@ -13,6 +13,9 @@ volatile uint8_t mfrc522_registros[64] = {0};
 
 void mfrc522_init(void)
 {
+	// CONFIG SPI
+	mfrc522_spi_config();
+
     /*Incializacion del rfid*/
     MFRC522_RST(1); // Chip_GPIO_SetPinState(LPC_GPIO, RST_PORT, RST_PIN, 1);
     // vTaskDelay(200/portTICK_RATE_MS);      //DELAY DE FREERTOS 200ms - REEMPLAZAR POR IMPLEMENTACIÓN CON SYSTICK

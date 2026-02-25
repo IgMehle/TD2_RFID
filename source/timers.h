@@ -8,6 +8,8 @@
 #ifndef TIMERS_H_
 #define TIMERS_H_
 
+#include <stdint.h>
+
 // TIMER_T
 typedef struct timer {
 	uint8_t name;
@@ -19,7 +21,6 @@ typedef struct timer {
 	uint32_t time;
 } timer_t;
 
-#define N_TIMERS		8
 #define TIMER_PERIODIC	1
 #define TIMER_ONESHOT	0
 

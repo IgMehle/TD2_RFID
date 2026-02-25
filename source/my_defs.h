@@ -29,10 +29,21 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+// DRIVERS
+#include "mfrc522_td2.h"
+#include "lcd_4bit.h"
+#include "ds3231.h"
+#include "at24c32.h"
+#include "keypad.h"
+#include "timers.h"
 // PINOUT
 #include "pinout.h"
 // MY TIMERS
 #include "my_timers.h"
+
+/******************************************
+ * 	TAGS
+ ****************************************** */
 
 #define FW_VERSION	0
 #define FW_REV		1
@@ -130,7 +141,7 @@ void uart_init(void);
 uint8_t header_config(void);
 
 ///// UTILS /////
-void buzzer_beep(uint32_t ms, uint8_t timer);
+void buzzer_beep(uint32_t ms);
 uint8_t read_header(header_t *header);
 uint8_t save_header(header_t *header);
 uint8_t read_user(user_t *user);
