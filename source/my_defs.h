@@ -30,6 +30,8 @@
 #define EEPROM_LOGS_BASE	0x0840
 #define EEPROM_END			0x0FFF
 
+#define OFFSET_ADMIN_UID	8U
+
 /******************************************
  * 	MACROS
  ****************************************** */
@@ -97,7 +99,8 @@ typedef enum estados {
 	ALTA,
 	BAJA,
 	DUMP_LOG,
-	CLEAR_LOG
+	CLEAR_LOG,
+	INFO_USERS
 } estados_t;
 
 /******************************************
@@ -113,6 +116,10 @@ void board_uart_init(void);
 
 ///// APP /////
 uint8_t header_config(void);
+uint8_t validar_admin(uint8_t *uid);
+uint8_t alta_usuario(void);
+uint8_t baja_usuario(void);
+uint8_t info_usuarios(void);
 
 ///// UTILS /////
 void buzzer_beep(uint32_t ms);

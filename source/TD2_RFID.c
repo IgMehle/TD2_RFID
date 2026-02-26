@@ -130,22 +130,87 @@ int main(void)
 	timers_id.relay = give_timer(1000, off_relay);
 
 	// CONFIG HEADER
-	// header_config();
+	header_config();
+	//uint8_t loops = 0;
 
-	uint8_t loops = 0;
+	uint8_t status = STATUS_OK;
+	estados_t estado = IDLE;
+	uint8_t uid[5];
+	char opc = KEY_NONE;
 	// LOOP DE EJECUCION
     while (1) {
+    	switch(estado) {
+    	/*----- IDLE ---------------------------*/
+    	case IDLE:
+    		if (isCard()) {
+    			if (readCardSerial(uid)) {
+    				estado = VALIDAR;
+    				break;
+    			}
+    		}
+    		else estado = IDLE;
+    		break;
+    	/*----- VALIDAR ------------------------*/
+    	case VALIDAR:
+    		if (validar_admin(uid) == STATUS_OK) {
+    			estado = MENU_ADMIN;
+    			break;
+    		}
+    		else estado = IDLE;
+    		break;
+    	/*----- MENU ADMIN ---------------------*/
+		case MENU_ADMIN:
+			opc = keypad_readkey();
+			switch (opc) {
+			case '0':
+				estado = IDLE;
+				break;
+			case '1':
+				estado = ALTA;
+				break;
+			case '2':
+				estado = BAJA;
+				break;
+			case '3':
+				estado = INFO_USERS;
+				break;
+			default:
+				estado = MENU_ADMIN;
+				break;
+			}
+			break;
+		/*----- ALTA ---------------------------*/
+		case ALTA:
+			status = alta_usuario();
+			estado = IDLE;
+			break;
+		/*----- BAJA ---------------------------*/
+		case BAJA:
+			status = baja_usuario();
+			estado = IDLE;
+			break;
+		/*----- INFO USERS ---------------------*/
+		case INFO_USERS:
+			status = info_usuarios();
+			estado = IDLE;
+			break;
+		/*----- DEFAULT ------------------------*/
+		default:
+			estado = IDLE;
+			break;
+		}
+
     	// PRINTF("\nTecla: ");
-    	test_keypad();
+    	//test_keypad();
     	// itoa(toggles, s_toggles, 10);
     	// lcd4_print(s_toggles, 2);
-    	scan_rfid();
-    	loops++;
-    	if (loops > 9) {
-    		print_date();
-    		loops = 0;
-    	}
-    	delay_ms(100);
+    	//scan_rfid();
+    	//loops++;
+    	//if (loops > 9) {
+    	//	print_date();
+    	//	loops = 0;
+    	//}
+    	//delay_ms(100);
     }
     return 0;
 }

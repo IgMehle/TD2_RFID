@@ -77,3 +77,29 @@ uint8_t header_config(void)
 	if (status != STATUS_OK) error_msg(status, "Error save_header()");
 	return status;
 }
+
+uint8_t validar_admin(uint8_t *uid)
+{
+	return STATUS_OK;
+}
+
+uint8_t validar_admin(uint8_t *uid)
+{
+	return STATUS_OK;
+}
+
+uint8_t alta_usuario(void)
+{
+	return STATUS_OK;
+}
+
+uint8_t baja_usuario(void)
+{
+	return STATUS_OK;
+}
+
+uint8_t info_usuarios(void)
+{
+	return STATUS_OK;
+}
+/*---------------------------------------------------------------------*/
