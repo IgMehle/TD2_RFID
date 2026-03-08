@@ -31,6 +31,7 @@
 #define EEPROM_END			0x0FFF
 
 #define OFFSET_ADMIN_UID	8U
+#define VALID_USER			0xA5
 
 /******************************************
  * 	MACROS
@@ -57,30 +58,30 @@
  * 	TYPEDEFS
  ****************************************** */
 typedef struct header {
-	char firma[5];
-	uint8_t version[2];
-	uint8_t admin_uid_len;
-	uint8_t admin_uid[10];
-	uint8_t admin_pin[4];
-	uint8_t settings[10];
+	char firma[5];			// 0
+	uint8_t version[2];		// 5
+	uint8_t admin_uid_len;	// 7
+	uint8_t admin_uid[10];	// 8
+	uint8_t admin_pin[4];	// 18
+	uint8_t settings[10];	// 22
 } header_t;
 
 typedef struct user {
-	uint8_t valid;
-	uint16_t id;
-	uint8_t flags;
-	uint8_t uid[4];
-	uint8_t pin[4];
-	uint8_t hora_entrada[2];
-	uint8_t hora_salida[2];
+	uint8_t valid;				// 0
+	uint16_t id;				// 1
+	uint8_t flags;				// 3
+	uint8_t uid[4];				// 4
+	uint8_t pin[4];				// 8
+	uint8_t hora_entrada[2];	// 12
+	uint8_t hora_salida[2];		// 14
 } user_t;
 
 typedef struct log {
-	uint16_t user_id;
-	uint8_t mmdd[2];
-	uint16_t minutos;
-	uint8_t event;
-	uint8_t flags;
+	uint16_t user_id;	// 0
+	uint8_t mmdd[2];	// 2
+	uint16_t minutos;	// 4
+	uint8_t event;		// 6
+	uint8_t flags;		// 7
 } log_t;
 
 /******************************************
@@ -98,6 +99,7 @@ typedef enum estados {
 	MENU_ADMIN,
 	ALTA,
 	BAJA,
+	EDITAR,
 	DUMP_LOG,
 	CLEAR_LOG,
 	INFO_USERS
@@ -119,16 +121,19 @@ uint8_t header_config(void);
 uint8_t validar_admin(uint8_t *uid);
 uint8_t alta_usuario(void);
 uint8_t baja_usuario(void);
+uint8_t editar_usuario(void);
 uint8_t info_usuarios(void);
 
 ///// UTILS /////
 void buzzer_beep(uint32_t ms);
 uint8_t read_header(header_t *header);
 uint8_t save_header(header_t *header);
-uint8_t read_user(user_t *user);
-uint8_t save_user(user_t *user);
-uint8_t read_log(log_t *log);
-uint8_t save_log(log_t *log);
+uint8_t read_user(user_t *user, uint16_t id);
+uint8_t save_user(user_t *user, uint16_t id);
+uint8_t read_log(log_t *log, uint16_t index);
+uint8_t save_log(log_t *log, uint16_t index);
+uint8_t uid_compare(uint8_t *uid1, uint8_t *uid2);
 void error_msg(uint8_t error_code, char *text);
+void state_switch_print(estados_t from, estados_t to);
 
 #endif /* MY_DEFS_H_ */

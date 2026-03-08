@@ -129,9 +129,9 @@ int main(void)
 	timers_id.off = give_timer(20, off_buzzer);
 	timers_id.relay = give_timer(1000, off_relay);
 
+	// uint8_t loops = 0;
 	// CONFIG HEADER
 	header_config();
-	//uint8_t loops = 0;
 
 	uint8_t status = STATUS_OK;
 	estados_t estado = IDLE;
@@ -145,6 +145,7 @@ int main(void)
     		if (isCard()) {
     			if (readCardSerial(uid)) {
     				estado = VALIDAR;
+    				state_switch_print(IDLE, VALIDAR);
     				break;
     			}
     		}
@@ -154,25 +155,31 @@ int main(void)
     	case VALIDAR:
     		if (validar_admin(uid) == STATUS_OK) {
     			estado = MENU_ADMIN;
+    			state_switch_print(VALIDAR, MENU_ADMIN);
     			break;
     		}
     		else estado = IDLE;
+    		state_switch_print(VALIDAR, IDLE);
     		break;
     	/*----- MENU ADMIN ---------------------*/
 		case MENU_ADMIN:
 			opc = keypad_readkey();
 			switch (opc) {
 			case '0':
+				state_switch_print(MENU_ADMIN, IDLE);
 				estado = IDLE;
 				break;
 			case '1':
 				estado = ALTA;
+				state_switch_print(MENU_ADMIN, ALTA);
 				break;
 			case '2':
 				estado = BAJA;
+				state_switch_print(MENU_ADMIN, BAJA);
 				break;
 			case '3':
 				estado = INFO_USERS;
+				state_switch_print(MENU_ADMIN, INFO_USERS);
 				break;
 			default:
 				estado = MENU_ADMIN;
@@ -183,16 +190,19 @@ int main(void)
 		case ALTA:
 			status = alta_usuario();
 			estado = IDLE;
+			state_switch_print(ALTA, IDLE);
 			break;
 		/*----- BAJA ---------------------------*/
 		case BAJA:
 			status = baja_usuario();
 			estado = IDLE;
+			state_switch_print(BAJA, IDLE);
 			break;
 		/*----- INFO USERS ---------------------*/
 		case INFO_USERS:
 			status = info_usuarios();
 			estado = IDLE;
+			state_switch_print(INFO_USERS, IDLE);
 			break;
 		/*----- DEFAULT ------------------------*/
 		default:
@@ -200,17 +210,18 @@ int main(void)
 			break;
 		}
 
+    	/*----- HARDWARE TEST ------------------*/
     	// PRINTF("\nTecla: ");
-    	//test_keypad();
+    	// test_keypad();
     	// itoa(toggles, s_toggles, 10);
     	// lcd4_print(s_toggles, 2);
     	//scan_rfid();
-    	//loops++;
-    	//if (loops > 9) {
-    	//	print_date();
-    	//	loops = 0;
-    	//}
-    	//delay_ms(100);
+    	// loops++;
+    	// if (loops > 9) {
+    	// 	print_date();
+    	// 	loops = 0;
+    	// }
+    	// delay_ms(100);
     }
     return 0;
 }
