@@ -14,6 +14,7 @@ typedef struct {
 	uint8_t keypad;
 	uint8_t off;
 	uint8_t relay;
+	uint8_t ledaux;
 } timers_id_t;
 
 // VARIABLE

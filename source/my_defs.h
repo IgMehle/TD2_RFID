@@ -91,7 +91,8 @@ typedef enum estados {
 	IDLE,
 	RFID_READ,
 	PIN_READ,
-	VALIDAR,
+	VALIDAR_UID,
+	VALIDAR_PIN,
 	DENEGADO,
 	ABRIR_PUERTA,
 	PUERTA_ABIERTA,
@@ -118,6 +119,9 @@ void board_uart_init(void);
 
 ///// APP /////
 uint8_t header_config(void);
+uint8_t validar_usuario(uint8_t *uid);
+uint8_t abrir_puerta(void);
+uint8_t cerrar_puerta(void);
 uint8_t validar_admin(uint8_t *uid);
 uint8_t alta_usuario(void);
 uint8_t baja_usuario(void);

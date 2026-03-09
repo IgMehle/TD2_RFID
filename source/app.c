@@ -68,13 +68,7 @@ uint8_t header_config(void)
 				if (readCardSerial(uid)) break;
 			}
 		}
-
-		// char str[17];
-		// sprintf(str, "%02x %02x %02x %02x", uid[0], uid[1], uid[2], uid[3]);
-		//lcd4_print("ADMIN", 1);
-		// lcd4_print(str, 2);
-		// PRINTF("NEW ADMIN: %s\n", str);
-		// Asigno el uid como admin
+		// Asigno uid a como admin
 		header.admin_uid[0] = uid[0];
 		header.admin_uid[1] = uid[1];
 		header.admin_uid[2] = uid[2];
@@ -91,24 +85,50 @@ uint8_t header_config(void)
 	return status;
 }
 
+uint8_t validar_usuario(uint8_t *uid)
+{
+	user_t user;
+	uint8_t status = STATUS_OK;
+	uint16_t id = 0;
+
+	// Leo slots de user buscando match
+	// hasta que lea uno vacio
+	do {
+		status = read_user(&user, id);
+		// Comparo uid del user con la leida
+		if (uid_compare(uid, user.uid) == 0) {
+			PRINTF("[VALIDAR] Usuario %d, autorizado!\n", id);
+			return STATUS_OK;
+		}
+		if (id < 128) id++;
+	} while (user.valid == VALID_USER);
+	// No hubo match
+	PRINTF("[VALIDAR] Acceso denegado.\n");
+	// Prendo led rojo
+	LED_AUX_ON();
+	buzzer_beep(1000);
+	on_timer(timers_id.off, TIMER_ONESHOT);
+	return STATUS_ERR;
+}
+
+uint8_t abrir_puerta(void)
+{
+	RELAY_ON();
+	buzzer_beep(1000);
+	on_timer(timers_id.relay, TIMER_ONESHOT);
+	return STATUS_OK;
+}
+
 uint8_t validar_admin(uint8_t *uid)
 {
 	// TODO: Tengo que buscar el uid del admin en el header y compararlo con el que lei
 	header_t header;
 	uint8_t status = STATUS_OK;
-	uint8_t comp;
 
 	// Levanto el header
 	status = read_header(&header);
 	if (status != STATUS_OK) error_msg(status, "Error read_header()");
 
-//	PRINTF("UID: %02x %02x %02x %02x\n",
-//			uid[0], uid[1], uid[2], uid[3]);
-//	PRINTF("ADMIN UID: %02x %02x %02x %02x\n",
-//				header.admin_uid[0],
-//				header.admin_uid[1],
-//				header.admin_uid[2],
-//				header.admin_uid[3]);
 	// Comparo uid leido con el uid admin
 	if (uid_compare(uid, header.admin_uid) != STATUS_OK) {
 		status = STATUS_ERR;
@@ -119,31 +139,115 @@ uint8_t validar_admin(uint8_t *uid)
 uint8_t alta_usuario(void)
 {
 	uint8_t status = STATUS_OK;
+	user_t new = {0};
 	uint16_t address = EEPROM_USER_BASE;
 	uint16_t index = 0;
 	uint8_t bf[2] = {0}; // Ver si funciona igual con un byte individual
+	uint8_t uid[4];
+	char key = KEY_NONE;
 
 	PRINTF("[ALTA] Buscando slot libre...\n");
 
 	// Leo el primer slot de user
-//	status = eeprom_read(bf, address, 1);
-//	if (status != STATUS_OK) error_msg(status, "Error eeprom_read()");
-//
-//	while (bf[0] == VALID_USER) {
-//		index++;
-//		address += sizeof(user_t);
-//		if (address < EEPROM_LOGS_BASE) {
-//			status = eeprom_read(bf, address, 1);
-//			if (status != STATUS_OK) error_msg(status, "Error eeprom_read()");
-//		}
-//		else {
-//			PRINTF("[ALTA] Memoria llena, cancelando...");
-//			return STATUS_ERR;
-//		}
-//	}
+	status = eeprom_read(bf, address, 1);
+	if (status != STATUS_OK) error_msg(status, "Error eeprom_read()");
+
+	while (bf[0] == VALID_USER) {
+		// Si detecto un user valido, incremento el puntero
+		index++;
+		address += sizeof(user_t);
+		// Reviso que no me pase del limite de memoria de usuarios
+		if (address < EEPROM_LOGS_BASE) {
+			status = eeprom_read(bf, address, 1);
+			if (status != STATUS_OK) error_msg(status, "Error eeprom_read()");
+		}
+		else {
+			PRINTF("[ALTA] Memoria llena, cancelando...");
+			return STATUS_ERR;
+		}
+		// Vuelvo a leer el nuevo slot
+		status = eeprom_read(bf, address, 1);
+		if (status != STATUS_OK) error_msg(status, "Error eeprom_read()");
+	}
 
 	// Slot vacio en index
+	PRINTF("[ALTA] Escanee tarjeta de nuevo usuario...\n");
+	// Escaneo continuamente hasta leer una UID valida
+	while (1) {
+		if (isCard()) {
+			if (readCardSerial(uid)) break;
+		}
+		key = keypad_readkey();
+		if (key == 'C') {
+			PRINTF("\n[ALTA] Cancelando...");
+			return STATUS_ERR;
+		}
+	}
+	new.uid[0] = uid[0];
+	new.uid[1] = uid[1];
+	new.uid[2] = uid[2];
+	new.uid[3] = uid[3];
+//	PRINTF("[ALTA] UID: %02x %02x %02x %02x\n",
+//			uid[0], uid[1], uid[2], uid[3]);
+	// Ingresar hora de entrada
+	PRINTF("[ALTA] Ingrese hora de entrada: ");
+	while (1) {
+		key = keypad_readkey();
+		// Hora valida
+		if ('0' <= key && key <= '9') {
+			new.hora_entrada[0] = atoi(&key);
+			PRINTF("\n[ALTA] Hora de entrada: %d:00", new.hora_entrada[0]);
+			break;
+		}
+		// CANCELAR
+		else if (key == 'C') {
+			PRINTF("\n[ALTA] Cancelando...");
+			return STATUS_ERR;
+		}
+		// Hora invalida
+		else if (key != KEY_NONE) {
+			PRINTF("\n[ALTA] Tecla invalida, reingrese:");
+		}
+	}
+	// Ingresar hora de salida
+	PRINTF("[ALTA] Ingrese hora de salida: ");
+	while (1) {
+		key = keypad_readkey();
+		// Hora valida
+		if ('0' <= key && key <= '9') {
+			new.hora_salida[0] = atoi(&key);
+			PRINTF("\n[ALTA] Hora de salida: %d:00", new.hora_salida[0]);
+		}
+		// CANCELAR
+		else if (key == 'C') {
+			PRINTF("\n[ALTA] Cancelando...");
+			return STATUS_ERR;
+		}
+		// Hora invalida
+		else if (key != KEY_NONE) {
+			PRINTF("\n[ALTA] Tecla invalida, reingrese:");
+		}
+	}
+	// Parametros del user
+	new.valid = VALID_USER;
+	new.id = index;
+	new.flags = 0x00;
 
+	PRINTF("----- NUEVO USUARIO -----\n");
+	PRINTF("ID: %d\n", new.id);
+	PRINTF("UID: %02x %02x %02x %02x\n",
+				new.uid[0], new.uid[1], new.uid[2], new.uid[3]);
+	PRINTF("PIN: %d%d%d%d\n",
+					new.pin[0], new.pin[1], new.pin[2], new.pin[3]);
+	PRINTF("Hora entrada: %02d:00\n", new.hora_entrada);
+	PRINTF("Hora salida: %02d:00\n", new.hora_salida);
+	PRINTF("--------------------------\n");
+
+	// Guardo en el slot vacio
+	status = save_user(&new, index);
+	if (status == STATUS_OK) {
+		PRINTF("[ALTA] Usuario guardado con exito");
+	}
 	return status;
 }
 
@@ -154,6 +258,7 @@ uint8_t baja_usuario(void)
 
 uint8_t info_usuarios(void)
 {
+
 	return STATUS_OK;
 }
 /*---------------------------------------------------------------------*/

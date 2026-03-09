@@ -72,6 +72,7 @@ void scan_rfid(void);
 uint8_t toggle_ledrun(void);
 uint8_t off_buzzer(void);
 uint8_t off_relay(void);
+uint8_t off_ledaux(void);
 
 /*
  * @brief   Application entry point.
@@ -122,12 +123,15 @@ int main(void)
 
 	// TIMERS
 	init_timers();
+	// TIMERS PERIODICOS
 	timers_id.ledrun = give_timer(500, toggle_ledrun);
 	on_timer(timers_id.ledrun, TIMER_PERIODIC);
 	timers_id.keypad = give_timer(5, keypad_update);
 	on_timer(timers_id.keypad, TIMER_PERIODIC);
+	// TIMERS RETARDO DE APAGADO
 	timers_id.off = give_timer(20, off_buzzer);
 	timers_id.relay = give_timer(1000, off_relay);
+	timers_id.ledaux = give_timer(1000, off_ledaux);
 
 	// uint8_t loops = 0;
 	// CONFIG HEADER
@@ -144,22 +148,51 @@ int main(void)
     	case IDLE:
     		if (isCard()) {
     			if (readCardSerial(uid)) {
-    				estado = VALIDAR;
-    				state_switch_print(IDLE, VALIDAR);
+    				estado = VALIDAR_UID;
+    				state_switch_print(IDLE, VALIDAR_UID);
     				break;
     			}
     		}
     		else estado = IDLE;
     		break;
-    	/*----- VALIDAR ------------------------*/
-    	case VALIDAR:
+    	/*----- VALIDAR UID --------------------*/
+    	case VALIDAR_UID:
+
+    		// Validar admin
     		if (validar_admin(uid) == STATUS_OK) {
     			estado = MENU_ADMIN;
-    			state_switch_print(VALIDAR, MENU_ADMIN);
+    			state_switch_print(VALIDAR_UID, MENU_ADMIN);
     			break;
     		}
+    		// Validar user
+    		else if (validar_usuario(uid) == STATUS_OK) {
+				estado = ABRIR_PUERTA;
+				state_switch_print(VALIDAR_UID, ABRIR_PUERTA);
+				break;
+			}
     		else estado = IDLE;
-    		state_switch_print(VALIDAR, IDLE);
+    		state_switch_print(VALIDAR_UID, IDLE);
+    		break;
+    	/*----- ABRIR PUERTA -------------------*/
+    	case ABRIR_PUERTA:
+    		abrir_puerta();
+			estado = PUERTA_ABIERTA;
+			state_switch_print(ABRIR_PUERTA, PUERTA_ABIERTA);
+			break;
+		/*----- ABRIR PUERTA -------------------*/
+    	case PUERTA_ABIERTA:
+			if (PULSADOR() == 0) {
+				estado = PUERTA_CERRADA;
+				state_switch_print(PUERTA_ABIERTA, PUERTA_CERRADA);
+			}
+			else estado = PUERTA_ABIERTA;
+			break;
+		/*----- PUERTA CERRADA -----------------*/
+    	case PUERTA_CERRADA:
+    		//cerrar_puerta();
+    		RELAY_OFF();
+    		estado = IDLE;
+    		state_switch_print(PUERTA_CERRADA, IDLE);
     		break;
     	/*----- MENU ADMIN ---------------------*/
 		case MENU_ADMIN:
@@ -338,5 +371,11 @@ void scan_rfid(void)
 uint8_t off_relay(void)
 {
 	RELAY_OFF();
+	return 0;
+}
+
+uint8_t off_ledaux(void)
+{
+	LED_AUX_OFF();
 	return 0;
 }
