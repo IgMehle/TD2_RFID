@@ -68,8 +68,8 @@ typedef struct header {
 
 typedef struct user {
 	uint8_t valid;				// 0
-	uint16_t id;				// 1
-	uint8_t flags;				// 3
+	uint8_t flags;				// 1
+	uint16_t id;				// 2
 	uint8_t uid[4];				// 4
 	uint8_t pin[4];				// 8
 	uint8_t hora_entrada[2];	// 12

@@ -143,7 +143,7 @@ uint8_t alta_usuario(void)
 	uint16_t address = EEPROM_USER_BASE;
 	uint16_t index = 0;
 	uint8_t bf[2] = {0}; // Ver si funciona igual con un byte individual
-	uint8_t uid[4];
+	uint8_t uid[5];
 	char key = KEY_NONE;
 
 	PRINTF("[ALTA] Buscando slot libre...\n");
@@ -154,24 +154,23 @@ uint8_t alta_usuario(void)
 
 	while (bf[0] == VALID_USER) {
 		// Si detecto un user valido, incremento el puntero
+		PRINTF("Address 0x%x ocupada\n", address);
 		index++;
-		address += sizeof(user_t);
+		address += 0x10;
 		// Reviso que no me pase del limite de memoria de usuarios
 		if (address < EEPROM_LOGS_BASE) {
 			status = eeprom_read(bf, address, 1);
 			if (status != STATUS_OK) error_msg(status, "Error eeprom_read()");
 		}
 		else {
-			PRINTF("[ALTA] Memoria llena, cancelando...");
+			PRINTF("[ALTA] Memoria llena, cancelando...\n");
 			return STATUS_ERR;
 		}
-		// Vuelvo a leer el nuevo slot
-		status = eeprom_read(bf, address, 1);
-		if (status != STATUS_OK) error_msg(status, "Error eeprom_read()");
 	}
 
 	// Slot vacio en index
-	PRINTF("[ALTA] Escanee tarjeta de nuevo usuario...\n");
+	PRINTF("Slot vacio en address 0x%x\n", address);
+	PRINTF("[ALTA] Escanee tarjeta de nuevo usuario... ");
 	// Escaneo continuamente hasta leer una UID valida
 	while (1) {
 		if (isCard()) {
@@ -179,10 +178,12 @@ uint8_t alta_usuario(void)
 		}
 		key = keypad_readkey();
 		if (key == 'C') {
-			PRINTF("\n[ALTA] Cancelando...");
+			PRINTF("\n[ALTA] Cancelando...\n");
 			return STATUS_ERR;
 		}
 	}
+	PRINTF("%02x %02x %02x %02x\n", uid[0], uid[1], uid[2], uid[3]);
+	// Copio UID escaneado
 	new.uid[0] = uid[0];
 	new.uid[1] = uid[1];
 	new.uid[2] = uid[2];
@@ -196,17 +197,17 @@ uint8_t alta_usuario(void)
 		// Hora valida
 		if ('0' <= key && key <= '9') {
 			new.hora_entrada[0] = atoi(&key);
-			PRINTF("\n[ALTA] Hora de entrada: %d:00", new.hora_entrada[0]);
+			PRINTF("%d:00\n", new.hora_entrada[0]);
 			break;
 		}
 		// CANCELAR
 		else if (key == 'C') {
-			PRINTF("\n[ALTA] Cancelando...");
+			PRINTF("\n[ALTA] Cancelando...\n");
 			return STATUS_ERR;
 		}
 		// Hora invalida
 		else if (key != KEY_NONE) {
-			PRINTF("\n[ALTA] Tecla invalida, reingrese:");
+			PRINTF("\n[ALTA] Tecla invalida, reingrese: ");
 		}
 	}
 	// Ingresar hora de salida
@@ -216,11 +217,12 @@ uint8_t alta_usuario(void)
 		// Hora valida
 		if ('0' <= key && key <= '9') {
 			new.hora_salida[0] = atoi(&key);
-			PRINTF("\n[ALTA] Hora de salida: %d:00", new.hora_salida[0]);
+			PRINTF("%d:00\n", new.hora_salida[0]);
+			break;
 		}
 		// CANCELAR
 		else if (key == 'C') {
-			PRINTF("\n[ALTA] Cancelando...");
+			PRINTF("\n[ALTA] Cancelando...\n");
 			return STATUS_ERR;
 		}
 		// Hora invalida
@@ -239,15 +241,16 @@ uint8_t alta_usuario(void)
 				new.uid[0], new.uid[1], new.uid[2], new.uid[3]);
 	PRINTF("PIN: %d%d%d%d\n",
 					new.pin[0], new.pin[1], new.pin[2], new.pin[3]);
-	PRINTF("Hora entrada: %02d:00\n", new.hora_entrada);
-	PRINTF("Hora salida: %02d:00\n", new.hora_salida);
+	PRINTF("Hora entrada: %02d:00\n", new.hora_entrada[0]);
+	PRINTF("Hora salida: %02d:00\n", new.hora_salida[0]);
 	PRINTF("--------------------------\n");
 
 	// Guardo en el slot vacio
 	status = save_user(&new, index);
 	if (status == STATUS_OK) {
-		PRINTF("[ALTA] Usuario guardado con exito");
+		PRINTF("[ALTA] Usuario guardado con exito\n");
 	}
+	else error_msg(status, "No se pudo guardar en memoria el usuario.");
 	return status;
 }
 
@@ -258,7 +261,36 @@ uint8_t baja_usuario(void)
 
 uint8_t info_usuarios(void)
 {
+	uint8_t status = STATUS_OK;
+	user_t user = {0};
+	uint16_t address = EEPROM_USER_BASE;
+	uint16_t index = 0;
+	uint8_t bf[2] = {0}; // Ver si funciona igual con un byte individual
 
+	PRINTF("[INFO] Mostrando tamano de slots:\n");
+	PRINTF("\t HEADER: %d\n", sizeof(header_t));
+	PRINTF("\t USER: %d\n", sizeof(user_t));
+	PRINTF("\t LOG: %d\n", sizeof(log_t));
+	PRINTF("[INFO] Mostrando usuarios registrados\n");
+
+	// Escanear usuarios validos e imprimir
+	status = read_user(&user, index);
+	while (user.valid == VALID_USER) {
+		// Imprimo datos del usuario
+		PRINTF("----- USUARIO %d -----\n", index);
+		PRINTF("UID: %02x %02x %02x %02x\n",
+				user.uid[0], user.uid[1], user.uid[2], user.uid[3]);
+		PRINTF("PIN: %d%d%d%d\n",
+					user.pin[0], user.pin[1], user.pin[2], user.pin[3]);
+		PRINTF("Horario: %02d:00 | %02d:00\n\n",
+				user.hora_entrada[0], user.hora_salida[0]);
+		// Incremento index y address
+		index++;
+		address += 0x10;
+		// Leo nuevo slot
+		status = read_user(&user, index);
+	}
+	PRINTF("[INFO] %d usuarios registrados\n", index);
 	return STATUS_OK;
 }
 /*---------------------------------------------------------------------*/

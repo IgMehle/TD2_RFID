@@ -160,6 +160,7 @@ int main(void)
 
     		// Validar admin
     		if (validar_admin(uid) == STATUS_OK) {
+    			buzzer_beep(200);
     			estado = MENU_ADMIN;
     			state_switch_print(VALIDAR_UID, MENU_ADMIN);
     			break;
