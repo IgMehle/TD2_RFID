@@ -9,6 +9,7 @@
 #include "lcd_4bit_port.h"
 
 volatile lcd_t lcd;
+const uint8_t line_offsets[] = { 0x00, 0x40, 0x14, 0x54 };
 /*-------------------------------------------------------------------*/
 /* Ciclo de inicializacion modificado,
  * según datasheet HD44780U,
@@ -28,84 +29,6 @@ void lcd_4bit_init(void)
 	ClearDisplay4();
 	EntryModeSet4(0x06);
 	ReturnHome4();
-}
-/*-------------------------------------------------------------------*/
-void lcd4_write_com(unsigned char wb){
-	LCD_RS(0);
-	//LCD_RW(0);
-	lcd.data = wb;
-	LCD_DB7(lcd.d.b7);
-	LCD_DB6(lcd.d.b6);
-	LCD_DB5(lcd.d.b5);
-	LCD_DB4(lcd.d.b4);
-	LCD_E(1);
-	lcd_delay(DELAY_SHORT);
-	LCD_E(0);
-	LCD_DB7(lcd.d.b3);
-	LCD_DB6(lcd.d.b2);
-	LCD_DB5(lcd.d.b1);
-	LCD_DB4(lcd.d.b0);
-	LCD_E(1);
-	lcd_delay(DELAY_SHORT);
-	LCD_E(0);
-	lcd_delay(DELAY_SHORT);
-}
-/*-------------------------------------------------------------------*/
-void lcd4_write_char(char wd)
-{
-	LCD_RS(1);
-	//LCD_RW(0);
-	lcd.data = (uint8_t) wd;
-	LCD_DB7(lcd.d.b7);
-	LCD_DB6(lcd.d.b6);
-	LCD_DB5(lcd.d.b5);
-	LCD_DB4(lcd.d.b4);
-	LCD_E(1);
-	lcd_delay(DELAY_SHORT);
-	LCD_E(0);
-	LCD_DB7(lcd.d.b3);
-	LCD_DB6(lcd.d.b2);
-	LCD_DB5(lcd.d.b1);
-	LCD_DB4(lcd.d.b0);
-	LCD_E(1);
-	lcd_delay(DELAY_SHORT);
-	LCD_E(0);
-	lcd_delay(DELAY_SHORT);
-}
-/*-------------------------------------------------------------------*/
-void lcd4_print(char *p, unsigned char r)
-{
-	switch(r)
-	{
-	case 1:
-		r = 0;
-		break;
-	case 2:
-		r = 0x40;
-		break;
-	case 3:
-		r = 0x14;
-		break;
-	case 4:
-		r = 0x54;
-		break;
-	default:
-		r = 0;
-		break;
-	}
-	//if(r==1) r = 0;
-	//if(r==2) r = 0x40;
-	//if(r==3) r = 0x14;
-	//if(r==4) r = 0x54;
-
-	SetDDRAMAddress4(r);
-	r = 0;
-	while(r<20){
-		lcd4_write_char(*p);
-		p++;
-		r++;
-		if(*p == 0) r = 20;
-	}
 }
 /*-------------------------------------------------------------------*/
 /* Inicializacion de modo de 4 bits,
@@ -164,48 +87,149 @@ void lcd_mode4bit(void)
 	lcd_delay(DELAY_SHORT);
 }
 /*-------------------------------------------------------------------*/
+void lcd4_write_com(uint8_t wb){
+	LCD_RS(0);
+	//LCD_RW(0);
+	lcd.data = wb;
+	LCD_DB7(lcd.d.b7);
+	LCD_DB6(lcd.d.b6);
+	LCD_DB5(lcd.d.b5);
+	LCD_DB4(lcd.d.b4);
+	LCD_E(1);
+	lcd_delay(DELAY_SHORT);
+	LCD_E(0);
+	LCD_DB7(lcd.d.b3);
+	LCD_DB6(lcd.d.b2);
+	LCD_DB5(lcd.d.b1);
+	LCD_DB4(lcd.d.b0);
+	LCD_E(1);
+	lcd_delay(DELAY_SHORT);
+	LCD_E(0);
+	lcd_delay(DELAY_SHORT);
+}
+/*-------------------------------------------------------------------*/
+void lcd4_write_char(char wd)
+{
+	LCD_RS(1);
+	//LCD_RW(0);
+	lcd.data = (uint8_t) wd;
+	LCD_DB7(lcd.d.b7);
+	LCD_DB6(lcd.d.b6);
+	LCD_DB5(lcd.d.b5);
+	LCD_DB4(lcd.d.b4);
+	LCD_E(1);
+	lcd_delay(DELAY_SHORT);
+	LCD_E(0);
+	LCD_DB7(lcd.d.b3);
+	LCD_DB6(lcd.d.b2);
+	LCD_DB5(lcd.d.b1);
+	LCD_DB4(lcd.d.b0);
+	LCD_E(1);
+	lcd_delay(DELAY_SHORT);
+	LCD_E(0);
+	lcd_delay(DELAY_SHORT);
+}
+/*-------------------------------------------------------------------*/
+void lcd4_set_cursor(uint8_t line, uint8_t position)
+{
+	uint8_t val = 0x80 + line_offsets[line] + position;
+	lcd4_write_com(val);
+}
+/*-------------------------------------------------------------------*/
+void lcd4_string(const char *p_str)
+{
+	uint8_t pos = 0;
+	while (*p_str) {
+		if (pos < LCD_MAX_CHARS) {
+			// Escribo caracter
+			lcd4_write_char(*p_str);
+			// Incremento puntero a string
+			p_str++;
+			// Incremento contador de linea del lcd
+			pos++;
+		}
+		else break;
+	}
+}
+/*-------------------------------------------------------------------*/
+void lcd4_print(char *p, unsigned char r)
+{
+	switch(r)
+	{
+	case 1:
+		r = 0;
+		break;
+	case 2:
+		r = 0x40;
+		break;
+	case 3:
+		r = 0x14;
+		break;
+	case 4:
+		r = 0x54;
+		break;
+	default:
+		r = 0;
+		break;
+	}
+	//if(r==1) r = 0;
+	//if(r==2) r = 0x40;
+	//if(r==3) r = 0x14;
+	//if(r==4) r = 0x54;
+
+	SetDDRAMAddress4(r);
+	r = 0;
+	while(r<20){
+		lcd4_write_char(*p);
+		p++;
+		r++;
+		if(*p == 0) r = 20;
+	}
+}
+/*-------------------------------------------------------------------*/
+/*-------------------------------------------------------------------*/
 void ClearDisplay4(void){
-	lcd4_write_com(0x01);		// Display clear
+	lcd4_write_com(LCD_CLEARDISPLAY);		// Display clear
 	lcd_delay(DELAY_LONG);		// delay 1.53mseg
 }
 /*-------------------------------------------------------------------*/
 void ReturnHome4(void){
-	lcd4_write_com(0x02);		// Display clear
+	lcd4_write_com(LCD_RETURNHOME);		// Return home
 	lcd_delay(DELAY_LONG);			// delay 1.53mseg
 }
 /*-------------------------------------------------------------------*/
-void EntryModeSet4(unsigned char ems){
+void EntryModeSet4(uint8_t ems){
 	ems &= 0x03; ems |= 0x04;
 	lcd4_write_com(ems);		// Entry mode set: I/D=1-increment mode,SH=0-shift off
 	lcd_delay(DELAY_SHORT);			// delay 39useg
 }
 /*-------------------------------------------------------------------*/
-void DisplayOnOff4(unsigned char dof){
+void DisplayOnOff4(uint8_t dof){
 	//dof &= 0x07; dof |= 0x08;
 	lcd4_write_com(dof);		// Display ON/OFF:D=1 display on,C=0 cursor off,B=0,blink off
 	lcd_delay(DELAY_SHORT);			// delay 39useg
 }
 /*-------------------------------------------------------------------*/
-void CurDisShift4(unsigned char cdf){
+void CurDisShift4(uint8_t cdf){
 	cdf &= 0x0C; cdf |= 0x10;
 	lcd4_write_com(cdf);		// cursor display shift
 	lcd_delay(DELAY_SHORT);			// delay 39useg
 }
 /*-------------------------------------------------------------------*/
-void FunctionSet4(unsigned char fs){
+void FunctionSet4(uint8_t fs){
 	fs &= 0x2C;	// DL = 0; forces 4 bit mode
 	//fs |= 0x20;
 	lcd4_write_com(fs);		// Function set: 4bit bus,N=1-1line,F=0-5x8dots
 	lcd_delay(DELAY_SHORT);		// delay 39useg
 }
 /*-------------------------------------------------------------------*/
-void SetCGRAMAddress4(unsigned char sca){
+void SetCGRAMAddress4(uint8_t sca){
 	sca &= 0x3F; sca |= 0x40;
 	lcd4_write_com(sca);		// Funtion set: 8bit bus,N=1-1line,F=0-5x8dots
 	lcd_delay(DELAY_SHORT);			// delay 39useg
 }
 /*-------------------------------------------------------------------*/
-void SetDDRAMAddress4(unsigned char sda){
+void SetDDRAMAddress4(uint8_t sda){
 	sda &= 0x7F; sda |= 0x80;
 	lcd4_write_com(sda);		// Funtion set: 8bit bus,N=1-1line,F=0-5x8dots
 	lcd_delay(DELAY_SHORT);			// delay 39useg

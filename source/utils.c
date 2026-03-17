@@ -184,10 +184,10 @@ uint8_t read_user(user_t *user, uint16_t id)
 	// Cargo campos desde el buffer
 	// valid
 	user->valid = bf[0];
-	// index: 0: LSB, 1: MSB
-	user->id = (bf[1] << 8) + bf[2];
 	// flags
-	user->flags = bf[3];
+	user->flags = bf[1];
+	// index: 0: LSB, 1: MSB
+	user->id = (bf[2] << 8) + bf[3];
 	// uid
 	user->uid[0] = bf[4];
 	user->uid[1] = bf[5];
@@ -216,11 +216,11 @@ uint8_t save_user(user_t *user, uint16_t id)
 	// Cargo campos al buffer
 	// Valid
 	bf[0] = user->valid;
-	// id, 0: LSB, 1: MSB
-	bf[1] = (uint8_t)(user->id & 0x00FF);
-	bf[2] = (uint8_t)(user->id >> 8);
 	// flags
-	bf[3] = user->flags;
+	bf[1] = user->flags;
+	// id, 0: LSB, 1: MSB
+	bf[2] = (uint8_t)(user->id & 0x00FF);
+	bf[3] = (uint8_t)(user->id >> 8);
 	// uid
 	bf[4] = user->uid[0];
 	bf[5] = user->uid[1];
@@ -260,12 +260,12 @@ uint8_t save_log(log_t *log, uint16_t index)
 
 uint8_t uid_compare(uint8_t *uid1, uint8_t *uid2)
 {
-	uint8_t match = 0;
+	uint8_t match = RET_OK;
 	// Itero sobre los bytes del uid
 	for (uint8_t i = 0; i < 4; i++) {
 		// Al primer byte que no coincide, salgo y devuelvo -1
 		if (uid1[i] != uid2[i]) {
-			match = 0xFF;
+			match = RET_FALSE;
 			break;
 		}
 	}

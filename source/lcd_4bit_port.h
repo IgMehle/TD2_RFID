@@ -15,6 +15,7 @@
 /*-------------------------------------------------------------------*/
 // MY DEFS
 #include "pinout.h"
+#define lcd4_clear()	ClearDisplay4()
 /*-------------------------------------------------------------------*/
 // PINOUT GPIO
 #define LCD_DB4(x)			GPIO_PinWrite(GPIO, 0, LCD_DB4_PIN, x)
@@ -34,6 +35,10 @@
 
 #define DELAY_SHORT	600		// 200us @ 24MHz
 #define DELAY_LONG	6000	// 2ms @ 24MHz
+
+// Dimensiones del LCD
+#define LCD_MAX_LINES	2
+#define LCD_MAX_CHARS	16
 
 /*-------------------------------------------------------------------*/
 #endif /* LCD_4BIT_PORT_H_ */

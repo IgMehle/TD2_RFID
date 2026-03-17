@@ -74,6 +74,13 @@ uint8_t off_buzzer(void);
 uint8_t off_relay(void);
 uint8_t off_ledaux(void);
 
+static inline void show_lcd_idle(void)
+{
+	ClearDisplay4();
+	lcd4_set_cursor(0, 0);
+	lcd4_string("TD2 - RFID");
+}
+
 /*
  * @brief   Application entry point.
  */
@@ -93,9 +100,13 @@ int main(void)
 //	BUZZER_ON();
 //	delay_ms(500);
 //	BUZZER_OFF();
+	// Retardo de guarda
+	delay_ms(500);
 
 	lcd_4bit_init();
-	lcd4_print("Hola Nacho!", 1);
+	// lcd4_print("Hola Nacho!", 1);
+	lcd4_set_cursor(0, 0);
+	lcd4_string("INICIALIZANDO...");
 	//char s_toggles[17];
 
 	uint8_t stat_i2c = 0;
@@ -136,6 +147,8 @@ int main(void)
 	// uint8_t loops = 0;
 	// CONFIG HEADER
 	header_config();
+	// Imprimo pantalla de bienvenida
+	show_lcd_idle();
 
 	uint8_t status = STATUS_OK;
 	estados_t estado = IDLE;
@@ -157,12 +170,21 @@ int main(void)
     		break;
     	/*----- VALIDAR UID --------------------*/
     	case VALIDAR_UID:
-
     		// Validar admin
     		if (validar_admin(uid) == STATUS_OK) {
     			buzzer_beep(200);
     			estado = MENU_ADMIN;
     			state_switch_print(VALIDAR_UID, MENU_ADMIN);
+    			// Imprimo en LCD
+    			lcd4_set_cursor(0, 0);
+    			lcd4_string("MENU ADMIN");
+    			lcd4_set_cursor(1, 0);
+    			// Imprimo en debug
+    			PRINTF("----- MENU ADMIN -----\n");
+    			PRINTF("\t1. Alta usuario\n");
+    			PRINTF("\t2. Baja usuario\n");
+    			PRINTF("\t3. Listar usuarios\n");
+    			PRINTF("\t0. Cancelar\n");
     			break;
     		}
     		// Validar user
@@ -173,6 +195,7 @@ int main(void)
 			}
     		else estado = IDLE;
     		state_switch_print(VALIDAR_UID, IDLE);
+    		show_lcd_idle();
     		break;
     	/*----- ABRIR PUERTA -------------------*/
     	case ABRIR_PUERTA:
@@ -194,6 +217,7 @@ int main(void)
     		RELAY_OFF();
     		estado = IDLE;
     		state_switch_print(PUERTA_CERRADA, IDLE);
+    		show_lcd_idle();
     		break;
     	/*----- MENU ADMIN ---------------------*/
 		case MENU_ADMIN:
@@ -202,6 +226,7 @@ int main(void)
 			case '0':
 				state_switch_print(MENU_ADMIN, IDLE);
 				estado = IDLE;
+				show_lcd_idle();
 				break;
 			case '1':
 				estado = ALTA;
@@ -225,18 +250,21 @@ int main(void)
 			status = alta_usuario();
 			estado = IDLE;
 			state_switch_print(ALTA, IDLE);
+			show_lcd_idle();
 			break;
 		/*----- BAJA ---------------------------*/
 		case BAJA:
 			status = baja_usuario();
 			estado = IDLE;
 			state_switch_print(BAJA, IDLE);
+			show_lcd_idle();
 			break;
 		/*----- INFO USERS ---------------------*/
 		case INFO_USERS:
 			status = info_usuarios();
 			estado = IDLE;
 			state_switch_print(INFO_USERS, IDLE);
+			show_lcd_idle();
 			break;
 		/*----- DEFAULT ------------------------*/
 		default:

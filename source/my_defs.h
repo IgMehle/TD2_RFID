@@ -25,6 +25,9 @@
 #define STATUS_OK		0
 #define STATUS_ERR		1
 
+#define RET_OK		0
+#define	RET_FALSE	0xFF
+
 #define EEPROM_HEADER_BASE	0x0000
 #define EEPROM_USER_BASE	0x0040
 #define EEPROM_LOGS_BASE	0x0840

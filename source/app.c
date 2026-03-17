@@ -88,22 +88,38 @@ uint8_t header_config(void)
 uint8_t validar_usuario(uint8_t *uid)
 {
 	user_t user;
-	uint8_t status = STATUS_OK;
+	uint8_t status;
 	uint16_t id = 0;
+	char line[17];
 
 	// Leo slots de user buscando match
 	// hasta que lea uno vacio
 	do {
 		status = read_user(&user, id);
 		// Comparo uid del user con la leida
-		if (uid_compare(uid, user.uid) == 0) {
+		if (uid_compare(uid, user.uid) == RET_OK) {
 			PRINTF("[VALIDAR] Usuario %d, autorizado!\n", id);
+			// Imprimo en LCD
+			ClearDisplay4();
+			lcd4_set_cursor(0, 0);
+			sprintf(line, "Usuario %d", user.id);
+			lcd4_string(line);
+			lcd4_set_cursor(1, 0);
+			sprintf(line, "VERIFICADO");
+			lcd4_string(line);
 			return STATUS_OK;
 		}
 		if (id < 128) id++;
 	} while (user.valid == VALID_USER);
 	// No hubo match
 	PRINTF("[VALIDAR] Acceso denegado.\n");
+	// Imprimo en LCD
+	// Imprimo en LCD
+	ClearDisplay4();
+	lcd4_set_cursor(0, 0);
+	lcd4_string("ACCESO");
+	lcd4_set_cursor(1, 0);
+	lcd4_string("DENEGADO");
 	// Prendo led rojo
 	LED_AUX_ON();
 	buzzer_beep(1000);
@@ -130,7 +146,7 @@ uint8_t validar_admin(uint8_t *uid)
 	if (status != STATUS_OK) error_msg(status, "Error read_header()");
 
 	// Comparo uid leido con el uid admin
-	if (uid_compare(uid, header.admin_uid) != STATUS_OK) {
+	if (uid_compare(uid, header.admin_uid) != RET_OK) {
 		status = STATUS_ERR;
 	}
 	return status;
@@ -146,6 +162,7 @@ uint8_t alta_usuario(void)
 	uint8_t uid[5];
 	char key = KEY_NONE;
 
+	lcd4_string("1. ALTA");
 	PRINTF("[ALTA] Buscando slot libre...\n");
 
 	// Leo el primer slot de user
@@ -256,6 +273,7 @@ uint8_t alta_usuario(void)
 
 uint8_t baja_usuario(void)
 {
+	lcd4_string("2. BAJA");
 	return STATUS_OK;
 }
 
@@ -265,8 +283,9 @@ uint8_t info_usuarios(void)
 	user_t user = {0};
 	uint16_t address = EEPROM_USER_BASE;
 	uint16_t index = 0;
-	uint8_t bf[2] = {0}; // Ver si funciona igual con un byte individual
+	//uint8_t bf[2] = {0}; // Ver si funciona igual con un byte individual
 
+	lcd4_string("3. INFO USERS");
 	PRINTF("[INFO] Mostrando tamano de slots:\n");
 	PRINTF("\t HEADER: %d\n", sizeof(header_t));
 	PRINTF("\t USER: %d\n", sizeof(user_t));
