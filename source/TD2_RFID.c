@@ -11,6 +11,7 @@
  */
 
 // BOARD
+#include <my_timers.h>
 #include "board.h"
 #include "clock_config.h"
 #include "peripherals.h"
@@ -37,12 +38,12 @@
 // MY DEFS
 #include "my_defs.h"
 // DRIVERS
-#include "mfrc522_td2.h"
-#include "lcd_4bit.h"
-#include "ds3231.h"
-#include "at24c32.h"
-#include "keypad.h"
-#include "timers.h"
+#include "mfrc522_td2/mfrc522_td2.h"
+#include "lcd_4bit/lcd_4bit.h"
+#include "ds3231/ds3231.h"
+#include "at24c32/at24c32.h"
+#include "keypad/keypad.h"
+#include "timers/timers.h"
 // PINOUT
 #include "pinout.h"
 // MY TIMERS
@@ -57,7 +58,8 @@ volatile uint8_t led_run = 0;
 volatile uint16_t toggles = 0;
 uint8_t serNum[5];
 
-// TIMERS ID
+// MY TIMERS
+timer_t my_timers[N_TIMERS];
 timers_id_t timers_id;
 
 //---------------------------------------------------------------//
@@ -133,12 +135,15 @@ int main(void)
 	mfrc522_init();
 
 	// TIMERS
-	init_timers();
+	init_timers(my_timers, N_TIMERS);
+	uint8_t timer = 0;
 	// TIMERS PERIODICOS
 	timers_id.ledrun = give_timer(500, toggle_ledrun);
 	on_timer(timers_id.ledrun, TIMER_PERIODIC);
-	timers_id.keypad = give_timer(5, keypad_update);
+
+	timer = give_timer(5, keypad_update);
 	on_timer(timers_id.keypad, TIMER_PERIODIC);
+
 	// TIMERS RETARDO DE APAGADO
 	timers_id.off = give_timer(20, off_buzzer);
 	timers_id.relay = give_timer(1000, off_relay);

@@ -7,6 +7,7 @@
 
 //  MY DEFS
 #include "my_defs.h"
+// PINOUT
 #include "pinout.h"
 // BOARD
 #include "board.h"

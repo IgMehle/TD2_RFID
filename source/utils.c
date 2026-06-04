@@ -34,12 +34,12 @@
 #include <stdbool.h>
 #include <string.h>
 // DRIVERS
-#include "mfrc522_td2.h"
-#include "lcd_4bit.h"
-#include "ds3231.h"
-#include "at24c32.h"
-#include "keypad.h"
-#include "timers.h"
+#include "mfrc522_td2/mfrc522_td2.h"
+#include "lcd_4bit/lcd_4bit.h"
+#include "ds3231/ds3231.h"
+#include "at24c32/at24c32.h"
+#include "keypad/keypad.h"
+#include "timers/timers.h"
 
 const char *estados_names[] = {
 	"IDLE",
