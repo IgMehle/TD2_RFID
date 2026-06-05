@@ -40,8 +40,8 @@
 #define KBD_C2_PIN		9
 #define KBD_C3_PIN		8
 /* ----------------- UART ------------------- */
-#define UART0_TX_PIN	24
-#define UART0_RX_PIN	25
+#define UART0_TX_PIN	25
+#define UART0_RX_PIN	24
 #define UART1_TX_PIN	7
 #define UART1_RX_PIN	12
 
